@@ -14,8 +14,30 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,re_path
+
+
+
+#rest
+from django.conf.urls import url, include
+from rest_framework import routers
+# from tutorial.quickstart import views  官网模块引入写法，有误
+from apps.x_user import views
+router = routers.DefaultRouter() #路由
+router.register(r'users', views.UserViewSet) #路由地址与接口配置
+router.register(r'groups', views.GroupViewSet)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+]
+
+
+
+#注：path是新写法，url为老写法,若要使用正则，则使用re_path
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    #rest
+    re_path(r'^', include(router.urls)), #包含进路由配置的url
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')) #浏览器测试接口配置
 ]
