@@ -28,13 +28,7 @@ router.register(r'users', views.UserViewSet) #路由地址与接口配置
 router.register(r'groups', views.GroupViewSet)
 
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
-]
 
-
-
-#注：path是新写法，url为老写法,若要使用正则，则使用re_path
 urlpatterns = [
     path('admin/', admin.site.urls),
     #rest
