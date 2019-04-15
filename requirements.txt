@@ -1,4 +1,4 @@
-Django==2.0
+Django==2.1.7
 xadmin==2.0.1
 djangorestframework==3.9.2
 pytz==2019.1
