@@ -5,4 +5,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class Team_Profile(models.Model):
-    pass
+    team_name = models.CharField(max_length=50,default='',verbose_name='队伍名称')
+
+    def __str__(self):
+        return self.team_name

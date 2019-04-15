@@ -42,8 +42,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'xadmin',
     'crispy_forms',
-    'x_user',
+    'apps.x_user',
     'apps.x_team',
+    'apps.x_competition',
+
 ]
 
 MIDDLEWARE = [
