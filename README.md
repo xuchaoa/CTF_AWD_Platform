@@ -13,3 +13,14 @@ Restful 风格的 API 应该是前后端分离的最佳实践
 
 ## x
 superuser:admin@ctf
+
+
+## 安装说明
+xadmin  windows下安装编码报错请直接使用如下
+```
+python -m pip install installed_module/xadmin-master.zip
+
+```
+
+### 修改兼容Django2.2如下：
+http://www.cnblogs.com/xingfuggz/p/10142388.html
