@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,re_path
 import xadmin
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 #rest
@@ -24,8 +26,8 @@ from rest_framework import routers
 # from tutorial.quickstart import views  官网模块引入写法，有误
 from apps.x_user import views
 router = routers.DefaultRouter() #路由
-router.register(r'users', views.UserViewSet) #路由地址与接口配置
-router.register(r'groups', views.GroupViewSet)
+# router.register(r'users', views.UserViewSet) #路由地址与接口配置
+# router.register(r'groups', views.GroupViewSet)
 
 
 
@@ -36,3 +38,5 @@ urlpatterns = [
     re_path(r'^', include(router.urls)), #包含进路由配置的url
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')) #浏览器测试接口配置
 ]
+
+urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

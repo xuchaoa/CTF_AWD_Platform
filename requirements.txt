@@ -1,4 +1,7 @@
-Django==2.2
+Django==2.0
+xadmin==2.0.1
+djangorestframework==3.9.2
 pytz==2019.1
 sqlparse==0.3.0
-djangorestframework==3.9.2
+pillow==6.0.0
+

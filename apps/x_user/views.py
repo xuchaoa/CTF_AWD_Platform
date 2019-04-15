@@ -8,10 +8,10 @@ from rest_framework import viewsets #引入viewsets，类似controllers
 from .serializers import UserSerializer, GroupSerializer #引入刚刚定义的序列化器
 
 # Create your views here.
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().order_by('-date_joined') #集合
-    serializer_class = UserSerializer  #序列化
-
-class GroupViewSet(viewsets.ModelViewSet):
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
+# class UserViewSet(viewsets.ModelViewSet):
+#     queryset = User.objects.all().order_by('-date_joined') #集合
+#     serializer_class = UserSerializer  #序列化
+#
+# class GroupViewSet(viewsets.ModelViewSet):
+#     queryset = Group.objects.all()
+#     serializer_class = GroupSerializer

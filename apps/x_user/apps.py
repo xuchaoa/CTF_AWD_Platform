@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class XuserConfig(AppConfig):
+class XsersConfig(AppConfig):
     name = 'xuser'

@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'xadmin',
     'crispy_forms',
+    'x_user',
+    'apps.x_team',
 ]
 
 MIDDLEWARE = [
@@ -89,8 +91,13 @@ DATABASES = {
         'PASSWORD': 'blog.Dxxx',
         'HOST': '10.6.65.106',
         'PORT': '3306',
+        'TEST': {
+                'CHARSET': 'utf8',
+                'COLLATION': 'utf8_general_ci',
+            }
 
-    }
+    },
+
 }
 
 
@@ -131,3 +138,13 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+##
+
+AUTH_USER_MODEL = 'x_user.User_Profile'
+
+
+## media路径
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
