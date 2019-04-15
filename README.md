@@ -24,3 +24,7 @@ python -m pip install installed_module/xadmin-master.zip
 
 ### 修改兼容Django2.2如下：
 http://www.cnblogs.com/xingfuggz/p/10142388.html
+
+
+t = DEBUG_ENGINE.from_string(fh.read())
+UnicodeDecodeError: 'gbk' codec can't decode byte 0xa6 in position 9737: illegal multibyte sequence
