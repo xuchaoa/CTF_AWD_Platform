@@ -16,9 +16,9 @@ import django
 django.setup()
 
 from db_tools.data.user_data import user as users
-from apps.x_user.models import User_Profile
+from apps.x_user.models import UserProfile
 for user in users:
-    user_instance = User_Profile()
+    user_instance = UserProfile()
     user_instance.user_name = user.get('user_name')
     user_instance.user_school = user.get('user_school')
     user_instance.save()
