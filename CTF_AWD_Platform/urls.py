@@ -33,7 +33,7 @@ router = routers.DefaultRouter() #路由
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
-    path('admin/',xadmin.site.urls),
+    path('x_admin/',xadmin.site.urls),
     #rest
     re_path(r'^', include(router.urls)), #包含进路由配置的url
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')) #浏览器测试接口配置

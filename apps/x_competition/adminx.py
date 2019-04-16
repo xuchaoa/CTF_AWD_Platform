@@ -7,6 +7,7 @@ import xadmin
 from . import models
 
 class competition_display(object):
+    '''显示的字段'''
     list_display = ['competition_name','competition_type','competition_choicenum']
     '''被检索的字段'''
     search_fields = ['competition_name']

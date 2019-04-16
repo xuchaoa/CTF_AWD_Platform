@@ -143,7 +143,7 @@ STATIC_URL = '/static/'
 
 ##
 
-AUTH_USER_MODEL = 'x_user.User_Profile'
+AUTH_USER_MODEL = 'x_user.UserProfile'
 
 
 ## media路径
