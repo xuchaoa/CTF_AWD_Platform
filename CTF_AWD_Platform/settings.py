@@ -155,8 +155,12 @@ MEDIA_URL = '/media/'
 ## DRF config
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 REST_FRAMEWORK = {
-    'JWT_PAYLOAD_HANDLER':
-    'rest_framework_jwt.utils.jwt_payload_handler',
+    'DEFAULT_PERMISSION_CLASSES': (
+        # 'rest_framework.permissions.IsAuthenticated',  # 允许认证用户
+    ),
+
+    'JWT_PAYLOAD_HANDLER':'rest_framework_jwt.utils.jwt_payload_handler',
+
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',    #sessionid验证方式
@@ -166,8 +170,10 @@ REST_FRAMEWORK = {
 
 ## JWT conf
 
+## :TODO： 字段设置失效，直接修改源代码，原因初步判断是Bug
+
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(minutes=180),   #有效期180分钟
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=3),   #有效期180分钟
     #定义与令牌一起发送的Authorization标头值前缀
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
     'JWT_AUTH_COOKIE': None,

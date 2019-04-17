@@ -36,11 +36,11 @@ class UserProfile(AbstractUser):
 
     class Meta:
         db_table = 'UserProfile'
-        verbose_name = '用户'  #后台显示的字段信息
+        verbose_name = '用户管理'  #后台显示的字段信息
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.user_name
+        return self.username
 
 class user_log(models.Model):
     '''

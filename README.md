@@ -14,6 +14,7 @@ Restful 风格的 API 应该是前后端分离的最佳实践
 ## x
 superuser:admin@sdutctf123
 Django REST framework : admin@sdutctf123
+test ： test@sdutctf123
 
 BeginTime: 2019.4.15 ~ now
 
