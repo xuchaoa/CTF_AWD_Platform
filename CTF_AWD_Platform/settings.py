@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.x_user',
     'apps.x_team',
     'apps.x_competition',
+    'django_filters',
 
 ]
 
@@ -155,6 +156,7 @@ MEDIA_URL = '/media/'
 ## DRF config
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_PERMISSION_CLASSES': (
         # 'rest_framework.permissions.IsAuthenticated',  # 允许认证用户
     ),
