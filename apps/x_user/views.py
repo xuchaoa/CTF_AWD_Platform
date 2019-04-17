@@ -2,16 +2,52 @@ from django.shortcuts import render
 
 # Create your views here.
 
-from django.contrib.auth.models import User, Group #引入model
-from rest_framework import viewsets #引入viewsets，类似controllers
-# from tutorial.quickstart.serializers import UserSerializer, GroupSerializer 官网模块引入写法，有误
-from .serializers import UserSerializer, GroupSerializer #引入刚刚定义的序列化器
+
+
+from .serializers import UserSerializer
+from .models import UserProfile
+from rest_framework import mixins,generics
+from rest_framework import viewsets
+from rest_framework.authentication import BaseAuthentication  #基础验证。必须重写其中的方法
+from rest_framework.permissions import IsAuthenticated  #直接调用
+from rest_framework import permissions
 
 # Create your views here.
-# class UserViewSet(viewsets.ModelViewSet):
-#     queryset = User.objects.all().order_by('-date_joined') #集合
-#     serializer_class = UserSerializer  #序列化
+
+class MyAuth(BaseAuthentication):
+    def authenticate(self, request):
+        pass
+    def authenticate_header(self, request):
+        pass
+
+
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    '''
+    自定义权限
+    '''
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        else:
+            return obj.owner == request.user
+
+class UserListView(mixins.ListModelMixin,mixins.CreateModelMixin,viewsets.GenericViewSet):
+    # authentication_classes = (IsAuthenticated|test,)
+    queryset = UserProfile.objects.all()
+    serializer_class = UserSerializer
+
+# from rest_framework.views import APIView
+# from rest_framework.authentication import SessionAuthentication,BasicAuthentication
+# from rest_framework.response import Response
+# class TestView(APIView):
+#     authentication_classes = (SessionAuthentication,BasicAuthentication)
+#     permission_classes = (IsAuthenticated,)
 #
-# class GroupViewSet(viewsets.ModelViewSet):
-#     queryset = Group.objects.all()
-#     serializer_class = GroupSerializer
+#     def get(self,request,format=None):
+#         content = 'testview'
+#         return Response(content)
+
+
+
+
+

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import sys
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -150,3 +151,28 @@ AUTH_USER_MODEL = 'x_user.UserProfile'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+
+## DRF config
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+REST_FRAMEWORK = {
+    'JWT_PAYLOAD_HANDLER':
+    'rest_framework_jwt.utils.jwt_payload_handler',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',    #sessionid验证方式
+        'rest_framework.authentication.BasicAuthentication',  #账号密码验证方式
+    ),
+}
+
+## JWT conf
+
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(minutes=180),   #有效期180分钟
+    #定义与令牌一起发送的Authorization标头值前缀
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
+    'JWT_AUTH_COOKIE': None,
+    'JWT_ALGORITHM': 'HS256',
+    'JWT_ALLOW_REFRESH': True,   #允许刷新
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
+
+}
