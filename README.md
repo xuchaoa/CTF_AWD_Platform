@@ -26,7 +26,7 @@ xadmin
 dash: https://gitlab.com/k3oni/pydash-django-app/tree/master
 
 ## 临时解决方案（待讨论）
-无法修改User中基类中username字段的UNIQUE约束  -->>  注册时后台自动生成随机数进行填充
+[已解决]无法修改User中基类中username字段的UNIQUE约束  -->>  注册时后台自动生成随机数进行填充
 
 安全过滤初步想法：通过重载 SessionMiddleware 中间件来实现 或者自定义中间件
 
@@ -44,6 +44,11 @@ API View: GenericAPIView
 数据填充：Django  fixture
 
 api验证： JWT  ： http://getblimp.github.io/django-rest-framework-jwt/
+
+## 安全问题
+
+不得修改username的UNIQUE约束，否则会造成越权
+
 
 
 

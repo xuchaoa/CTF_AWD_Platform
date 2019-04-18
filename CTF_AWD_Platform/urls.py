@@ -27,7 +27,7 @@ from rest_framework import routers
 from apps.x_user import views
 #
 router = routers.DefaultRouter() #路由
-router.register('user',views.UserListView,base_name='user')
+router.register('user',views.UserProfileView,base_name='user')
 # router.register('test',views.TestView,base_name='test')
 from rest_framework_jwt.views import obtain_jwt_token,refresh_jwt_token,verify_jwt_token
 
