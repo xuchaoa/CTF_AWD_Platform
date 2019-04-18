@@ -15,6 +15,8 @@ from rest_framework import filters
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.authentication import SessionAuthentication
+from django_filters.rest_framework import DjangoFilterBackend
+import django_filters
 
 # Create your views here.
 
@@ -72,16 +74,20 @@ class UserPermission(permissions.BasePermission):
         else:
             return False
 
-class UserFilter(filters.BaseFilterBackend):
+class UserFilter(django_filters.rest_framework.FilterSet):
     '''
     None
     '''
-    def filter_queryset(self, request, queryset, view):
-        if request.user.is_superuser:
-            # print(True)
-            return queryset
-        else:
-            return queryset.filter(username=request.user)
+    # def filter_queryset(self, request, queryset, view):
+    #     if request.user.is_superuser:
+    #         # print(True)
+    #         return queryset
+    #     else:
+    #         return queryset.filter(username=request.user)
+
+    class Meta:
+        model = UserProfile
+        fields = ['id']
 
 
 class UserProfilePagination(PageNumberPagination):
@@ -101,8 +107,12 @@ class UserProfileView(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.Updat
     # filter_backends = (UserFilter,)
     # ordering = ('id',)
 
+    filter_backends = (DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter)
+    filter_class = UserFilter
+
     ordering_fields = ('id',)
-    filterset_fields = ('username','id')  #http://127.0.0.1:8000/api/user/?username=admin
+    search_fields = ('=username', '=id')  # 搜索指定字段，支持多种搜索模式
+    # filterset_fields = ('username','id')  #http://127.0.0.1:8000/api/user/?username=admin
 
     # filter_backends = (filters.SearchFilter,)
     # search_fields = ('=username','=id')  #搜索指定字段，支持多种搜索模式
