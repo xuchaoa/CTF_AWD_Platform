@@ -164,9 +164,9 @@ REST_FRAMEWORK = {
     'JWT_PAYLOAD_HANDLER':'rest_framework_jwt.utils.jwt_payload_handler',
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',    #sessionid验证方式
-        'rest_framework.authentication.BasicAuthentication',  #账号密码验证方式
+        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',    #sessionid验证方式
+        # 'rest_framework.authentication.BasicAuthentication',  #账号密码验证方式
     ),
 }
 

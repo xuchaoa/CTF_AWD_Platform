@@ -13,6 +13,8 @@ from rest_framework.permissions import IsAuthenticated,IsAdminUser  #直接调�
 from rest_framework import permissions
 from rest_framework import filters
 from rest_framework.pagination import PageNumberPagination
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework.authentication import SessionAuthentication
 
 # Create your views here.
 
@@ -39,6 +41,9 @@ class UserPermission(permissions.BasePermission):
         :param obj:
         :return:
         '''
+        print(obj)
+        print(dir(obj))
+        print('ssss')
         if bool(request.user and request.user.is_authenticated):
             print('1')
             if request.method in ('GET', 'HEAD', 'OPTIONS','PUT'):
@@ -58,7 +63,6 @@ class UserPermission(permissions.BasePermission):
         :return:
         '''
         if bool(request.user and request.user.is_authenticated):
-            print('1')
             if request.method in ('GET', 'HEAD', 'OPTIONS', 'PUT'):
                 return True
             elif request.user.is_superuser:
@@ -73,7 +77,6 @@ class UserFilter(filters.BaseFilterBackend):
     None
     '''
     def filter_queryset(self, request, queryset, view):
-        print(type(request.user))
         if request.user.is_superuser:
             # print(True)
             return queryset
@@ -84,21 +87,26 @@ class UserFilter(filters.BaseFilterBackend):
 class UserProfilePagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
-    page_query_param = 'p'
-
+    page_query_param = 'page'
+    max_page_size = 50
 
 
 class UserProfileView(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.UpdateModelMixin,viewsets.GenericViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserSerializer
-    # pagination_class = UserProfilePagination   #TODO: some warinings to fix
+    pagination_class = UserProfilePagination   #   warining #20
+    authentication_classes = (JSONWebTokenAuthentication,SessionAuthentication)
     permission_classes = (UserPermission,)
-    filter_backends = (UserFilter,)
+
+    # filter_backends = (UserFilter,)
     # ordering = ('id',)
+
     ordering_fields = ('id',)
     filterset_fields = ('username','id')  #http://127.0.0.1:8000/api/user/?username=admin
+
     # filter_backends = (filters.SearchFilter,)
     # search_fields = ('=username','=id')  #搜索指定字段，支持多种搜索模式
+
     # filter_backends = (filters.OrderingFilter,)   #排序过滤
     # ordering_fields = ('username','id')
 

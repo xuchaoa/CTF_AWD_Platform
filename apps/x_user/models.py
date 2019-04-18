@@ -38,6 +38,7 @@ class UserProfile(AbstractUser):
         db_table = 'UserProfile'
         verbose_name = '用户管理'  #后台显示的字段信息
         verbose_name_plural = verbose_name
+        ordering = ['id']  # fix #20
 
     def __str__(self):
         return self.username
