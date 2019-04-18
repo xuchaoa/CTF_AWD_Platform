@@ -26,16 +26,47 @@ class MyAuth(BaseAuthentication):
         pass
 
 
-class IsOwnerOrReadOnly(permissions.BasePermission):  #无法细化=单条数据权限
+class UserPermission(permissions.BasePermission):
     '''
-    自定义权限
+    自定义权限判断
     '''
-    message = 'this is a test msg'
+    message = '您无权使用该请求'
     def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
+        '''
+        object级别权限（后判断这个）
+        :param request:
+        :param view:
+        :param obj:
+        :return:
+        '''
+        if bool(request.user and request.user.is_authenticated):
+            print('1')
+            if request.method in ('GET', 'HEAD', 'OPTIONS','PUT'):
+                return True
+            elif request.user.is_superuser:
+                return True
+            else:
+                return False
         else:
-            return obj.owner == request.user
+            return False
+
+    def has_permission(self, request, view):
+        '''
+        model 级别权限（先判断这个）
+        :param request:
+        :param view:
+        :return:
+        '''
+        if bool(request.user and request.user.is_authenticated):
+            print('1')
+            if request.method in ('GET', 'HEAD', 'OPTIONS', 'PUT'):
+                return True
+            elif request.user.is_superuser:
+                return True
+            else:
+                return False
+        else:
+            return False
 
 class UserFilter(filters.BaseFilterBackend):
     '''
@@ -58,11 +89,10 @@ class UserProfilePagination(PageNumberPagination):
 
 
 class UserProfileView(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.UpdateModelMixin,viewsets.GenericViewSet):
-    permission_classes = [IsAdminUser]
     queryset = UserProfile.objects.all()
     serializer_class = UserSerializer
-    # pagination_class = UserProfilePagination   #TODO: some warinings
-    permission_classes = (IsOwnerOrReadOnly,)
+    # pagination_class = UserProfilePagination   #TODO: some warinings to fix
+    permission_classes = (UserPermission,)
     filter_backends = (UserFilter,)
     # ordering = ('id',)
     ordering_fields = ('id',)
