@@ -45,6 +45,8 @@ API View: GenericAPIView
 
 api验证： JWT  ： http://getblimp.github.io/django-rest-framework-jwt/
 
+CORS实现：django-cors-headers
+
 ## 安全问题
 
 不得修改username的UNIQUE约束，否则会造成越权

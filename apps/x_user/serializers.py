@@ -19,3 +19,18 @@ class UserSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Group  #使用Group model
 #         fields = ('url', 'name')
+
+
+class UserRegisterSerializer(serializers.ModelSerializer):
+    '''
+    注册S
+    重写create方法
+    '''
+    def create(self, validated_data):
+        user = super(UserRegisterSerializer,self).create(validated_data=validated_data)
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
