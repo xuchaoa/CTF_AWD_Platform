@@ -96,7 +96,7 @@ class UserListViewset(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.G
 
     def get_queryset(self):
         pass
-        # 如果有了这个那上面那句查询就不需要
+        # 如果有了这个那上面那句查询就不需要 
         # 在这可以获取url后面的过滤然后进行一些操作
         # return UserProfile.objects.filter(id__gt=0)
 
