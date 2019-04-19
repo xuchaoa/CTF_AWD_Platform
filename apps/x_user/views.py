@@ -17,6 +17,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.authentication import SessionAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.generics import ListAPIView,RetrieveAPIView
 
 
 
@@ -35,7 +36,7 @@ class MyAuth(BaseAuthentication):
 
 
 
-class UserProfilePagination(PageNumberPagination):
+class  UserProfilePagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
     page_query_param = 'page'
@@ -67,13 +68,17 @@ class UserCustomBackend(ModelBackend):
 # )
 
 
-
-class UserProfileView(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.UpdateModelMixin,viewsets.GenericViewSet):
+# 可以考虑类似自定义generic 中的APIView 实现自定义通用控制
+class UserListViewset(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):  #全部查询
+    '''
+    User查询等实现
+   '''
     queryset = UserProfile.objects.all()
     serializer_class = UserSerializer
     pagination_class = UserProfilePagination   #   warining #20
     authentication_classes = (JSONWebTokenAuthentication,SessionAuthentication)
     permission_classes = (UserPermission,)
+
 
 
     filter_backends = (DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter)
@@ -88,6 +93,12 @@ class UserProfileView(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.Updat
 
     # filter_backends = (filters.OrderingFilter,)   #排序过滤
     # ordering_fields = ('username','id')
+
+    def get_queryset(self):
+        pass
+        # 如果有了这个那上面那句查询就不需要
+        # 在这可以获取url后面的过滤然后进行一些操作
+        # return UserProfile.objects.filter(id__gt=0)
 
 
 from .serializers import UserRegisterSerializer
