@@ -7,6 +7,16 @@ from django.contrib.auth.models import User, Group #引入django身份验证机�
 from rest_framework import serializers #引入rest framework的serializers
 from .models import UserProfile
 from teams.models import TeamProfile
+import re
+from datetime import datetime
+from .models import VerifyCode
+from datetime import timedelta
+from CTF_AWD_Platform.settings import REGEX_MOBILE
+from rest_framework.validators import UniqueValidator  #直接调用封装好的
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
 
 
 class TeamSerializer(serializers.ModelSerializer):  #嵌套外键序列化
@@ -15,19 +25,64 @@ class TeamSerializer(serializers.ModelSerializer):  #嵌套外键序列化
         fields = '__all__'
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserRegSerializer(serializers.ModelSerializer):
     '''
-    UserInfo 类似于ModelForm
+    用户注册
     '''
     user_team_id = TeamSerializer()
+    '''
+    write_only=True  设置这个属性为true,去确保create/update的时候这个字段被用到，序列化的时候，不被用到
+    '''
+    code = serializers.CharField(required=True,max_length=6,min_length=6,
+                                 error_messages={
+                                     "blank": "请输入验证码",
+                                     "required": "请输入验证码",
+                                     "max_length": "验证码格式错误",
+                                     "min_length": "验证码格式错误"
+                                 },
+                                 write_only=True,help_text='验证码')  #新添加字段不会保存到数据库
+    user_phone = serializers.CharField(help_text="用户名", required=True, allow_blank=False,
+                                     validators=[UniqueValidator(queryset=User.objects.all(), message="用户已经存在")])
+
+    def validate_code(self, code):
+        # 验证码在数据库中是否存在，用户从前端post过来的值都会放入initial_data里面，排序(最新一条)。
+        verify_records = VerifyCode.objects.filter(mobile=self.initial_data["user_phone"]).order_by("-add_time")
+        if verify_records:
+            # 获取到最新一条
+            last_record = verify_records[0]
+
+            # 有效期为五分钟。
+            five_mintes_ago = datetime.now() - timedelta(hours=0, minutes=5, seconds=0)
+            if five_mintes_ago > last_record.add_time:
+                raise serializers.ValidationError("验证码过期")
+
+            if last_record.code != code:
+                raise serializers.ValidationError("验证码错误")
+
+        else:
+            raise serializers.ValidationError("验证码不存在")
+
+    # 不加字段名的验证器作用于所有字段之上。attrs是字段 validate之后返回的总的dict
+    def validate(self, attrs):
+        # attrs["mobile"] = attrs["username"]
+        # del attrs["code"]
+        # return attrs
+        del attrs['code']
+        '''
+        这里注意一定要删除，否则下面错误：提示数据库中没有该字段
+        Got AttributeError when attempting to get a value for field `code` on serializer `UserRegSerializer`.
+        The serializer field might be named incorrectly and not match any attribute or key on the `UserProfile` instance.
+        Original exception text was: 'UserProfile' object has no attribute 'code'.
+        '''
+        return attrs
+
     class Meta:
-        model = UserProfile
-        # fields = ('id','user_name','user_school') #设置Api显示字段
-        fields = '__all__'
-# class GroupSerializer(serializers.HyperlinkedModelSerializer):
+        model = User
+        fields = ("code", "user_phone", "password","user_team_id")  #DRF web表单显示字段
 #     class Meta:
-#         model = Group  #使用Group model
-#         fields = ('url', 'name')
+#         model = UserProfile
+#         # fields = ('id','user_name','user_school') #设置Api显示字段
+#         fields = '__all__'
 
 
 
@@ -45,3 +100,27 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = '__all__'
+
+
+class SmsSerializer(serializers.Serializer):  #验证某些字段
+    mobile = serializers.CharField(max_length=11)
+
+    def validate_user_phone(self, phone):
+        """
+        验证手机号码(函数名称必须为validate_ + 字段名)
+        """
+        # 手机是否注册
+        if User.objects.filter(user_phone=phone).count():
+            raise serializers.ValidationError("用户已经存在")
+
+        # 验证手机号码是否合法
+        if not re.match(REGEX_MOBILE, phone):
+            raise serializers.ValidationError("手机号码非法")
+
+        # 验证码发送频率
+        one_mintes_ago = datetime.now() - timedelta(hours=0, minutes=1, seconds=0)
+        # 添加时间大于一分钟以前。也就是距离现在还不足一分钟
+        if VerifyCode.objects.filter(add_time__gt=one_mintes_ago, user_phone=phone).count():
+            raise serializers.ValidationError("距离上一次发送未超过60s")
+
+        return phone

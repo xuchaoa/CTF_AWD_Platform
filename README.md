@@ -12,9 +12,9 @@ Restful 风格的 API 应该是前后端分离的最佳实践
 
 
 ## x
-superuser:admin@sdutctf123
-Django REST framework : admin@sdutctf123
-test ： test@sdutctf123
+- superuser:admin@sdutctf123
+- Django REST framework : admin@sdutctf123
+- test ： test@sdutctf123
 
 BeginTime: 2019.4.15 ~ now
 
@@ -27,6 +27,7 @@ dash: https://gitlab.com/k3oni/pydash-django-app/tree/master
 
 ## 临时解决方案（待讨论）
 [已解决]无法修改User中基类中username字段的UNIQUE约束  -->>  注册时后台自动生成随机数进行填充
+[已解决]重写django默认认证方法
 
 安全过滤初步想法：通过重载 SessionMiddleware 中间件来实现 或者自定义中间件
 
@@ -46,6 +47,15 @@ API View: GenericAPIView
 api验证： JWT  ： http://getblimp.github.io/django-rest-framework-jwt/
 
 CORS实现：django-cors-headers
+
+日志记录：logging
+
+
+手机验证码方式进行登陆：
+
+界面1： 手机号 验证码  用户名  密码
+
+界面2： 完善用户名、学号、班级、年纪等信息
 
 ## 安全问题
 

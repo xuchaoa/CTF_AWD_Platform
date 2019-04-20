@@ -10,7 +10,8 @@ class TeamProfile(models.Model):
 
     class Meta:
         db_table = 'TeamProfile'
-        verbose_name = '队伍管理'
+        verbose_name = '团队管理'
+        verbose_name_plural = verbose_name
 
     def __str__(self):
         return self.team_name

@@ -196,3 +196,10 @@ JWT_AUTH = {
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
 
 }
+
+## 容联云通讯平台
+# ACCOUNT_SID = '8a216da86a2a8174016a39f0748d09ec'
+# AUTH_TOKEN = 'dd49474506d14a07b5acffdf0468c44f'
+
+# 手机号码正则表达式
+REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"

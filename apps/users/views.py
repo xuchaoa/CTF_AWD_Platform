@@ -4,8 +4,8 @@ from django.shortcuts import render
 
 
 
-from .serializers import UserSerializer
-from .models import UserProfile
+from .serializers import UserRegSerializer,SmsSerializer
+from .models import UserProfile,VerifyCode
 from rest_framework import mixins,generics
 from rest_framework import viewsets
 from rest_framework.authentication import BaseAuthentication  #基础验证。必须重写其中的方法
@@ -18,7 +18,11 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.authentication import SessionAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import ListAPIView,RetrieveAPIView
-
+# from .serializers import
+from random import choice
+from utils.SMS import SendSMS
+from rest_framework import status
+from rest_framework.response import Response
 
 
 class MyAuth(BaseAuthentication):
@@ -54,27 +58,27 @@ class UserCustomBackend(ModelBackend):
     '''
     自定义用户验证(全局配置就行)
     我们可以使用符号&或者|将多个Q()对象组合起来传递给filter()，exclude()，get()等函数。当多个Q()对象组合起来时，Django会自动生成一个新的Q()
+    tips: 测试完成
     '''
     def authenticate(self, request, username=None, password=None, **kwargs):
         try:
-            user = User.object.get(Q(username=username) )
+            user = User.objects.get(Q(username=username) | Q(user_phone = username))
             if user.check_password(password):
                 return user
         except Exception as e:
             return None
-#  上面验证加到全局中
-# AUTHENTICATION_BACKENDS = (
-#     'users.views.CustomBackend',
-# )
+
+
+
 
 
 # 可以考虑类似自定义generic 中的APIView 实现自定义通用控制
-class UserListViewset(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):  #全部查询
+class UserViewset(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):  #全部查询
     '''
-    User查询等实现
+    User
    '''
     queryset = UserProfile.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserRegSerializer
     pagination_class = UserProfilePagination   #   warining #20
     authentication_classes = (JSONWebTokenAuthentication,SessionAuthentication)
     permission_classes = (UserPermission,)
@@ -116,16 +120,50 @@ class UserRegView(mixins.CreateModelMixin,viewsets.GenericViewSet):
 
 
 
-# from rest_framework.views import APIView
-# from rest_framework.authentication import SessionAuthentication,BasicAuthentication
-# from rest_framework.response import Response
-# class TestView(APIView):
-#     authentication_classes = (SessionAuthentication,BasicAuthentication)
-#     permission_classes = (IsAuthenticated,)
-#
-#     def get(self,request,format=None):
-#         content = 'testview'
-#         return Response(content)
+class SmsCodeViewset(mixins.CreateModelMixin,viewsets.GenericViewSet):
+    """
+    发送短信验证码
+    """
+    serializer_class = SmsSerializer
+
+    def generate_code(self):
+        """
+        生成四位数字的验证码字符串
+        """
+        seeds = "1234567890"
+        random_str = []
+        for i in range(6):
+            random_str.append(choice(seeds))
+
+        return "".join(random_str)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        mobile = serializer.validated_data["mobile"]
+
+        yun_pian = SendSMS()
+
+        code = self.generate_code()
+        data = [code,'5']  #验证码在五分钟后失效
+
+        sms_status = yun_pian.SendSms(to=mobile,data=data,tempId=1)
+        print(sms_status)
+
+        if sms_status["statusCode"] != '000000':
+            return Response({
+                "mobile": mobile
+            }, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            code_record = VerifyCode(code=code, mobile=mobile)
+            code_record.save()
+            return Response({
+                "mobile": mobile
+            }, status=status.HTTP_201_CREATED)
+
+
+
 
 
 

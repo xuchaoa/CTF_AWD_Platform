@@ -29,8 +29,11 @@ from rest_framework import routers
 from users import views  #直接引用，虽然Pycharm报错
 #
 router = routers.DefaultRouter() #路由
-router.register('users',views.UserListViewset,base_name='user')
+router.register('users',views.UserViewset,base_name='users')
 router.register('reg',views.UserRegView,base_name='register')
+router.register('codes',views.SmsCodeViewset,base_name='codes')
+
+
 from rest_framework_jwt.views import obtain_jwt_token,refresh_jwt_token,verify_jwt_token
 
 
