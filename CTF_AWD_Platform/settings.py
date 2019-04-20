@@ -47,10 +47,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'xadmin',
     'crispy_forms',
-    # 'apps.users',
     'users.apps.UsersConfig',
     'teams.apps.TeamsConfig',
-    # 'apps.x_competition',
     'django_filters',
 
 ]
