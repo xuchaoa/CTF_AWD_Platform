@@ -6,11 +6,20 @@
 from django.contrib.auth.models import User, Group #引入django身份验证机制User模块和Group模块
 from rest_framework import serializers #引入rest framework的serializers
 from .models import UserProfile
+from apps.x_team.models import TeamProfile
+
+
+class TeamSerializer(serializers.ModelSerializer):  #嵌套外键序列化
+    class Meta:
+        model = TeamProfile
+        fields = '__all__'
+
 
 class UserSerializer(serializers.ModelSerializer):
     '''
     UserInfo 类似于ModelForm
     '''
+    user_team_id = TeamSerializer()
     class Meta:
         model = UserProfile
         # fields = ('id','user_name','user_school') #设置Api显示字段
@@ -19,6 +28,8 @@ class UserSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Group  #使用Group model
 #         fields = ('url', 'name')
+
+
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):

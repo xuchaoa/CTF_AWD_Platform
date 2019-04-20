@@ -10,10 +10,10 @@ class UserPermission(permissions.BasePermission):
     '''
     自定义权限判断
     '''
-    message = '您无权使用该请求'
+    message = '您无权使用该请求或无权请求该资源'
     def has_object_permission(self, request, view, obj):
         '''
-        object级别权限（后判断这个）
+        object级别权限（后判断这个）  与这个设置相关联：mixins.RetrieveModelMixin
         :param request:
         :param view:
         :param obj:
@@ -22,10 +22,11 @@ class UserPermission(permissions.BasePermission):
         print(obj)
         print(dir(obj))
         print('ssss')
+        print(request.user.id)
         if bool(request.user and request.user.is_authenticated):
             print('1')
             if request.method in ('GET', 'HEAD', 'OPTIONS','PUT'):
-                return True
+                return (obj.id == request.user.id)
             elif request.user.is_superuser:
                 return True
             else:
@@ -33,7 +34,7 @@ class UserPermission(permissions.BasePermission):
         else:
             return False
 
-    def has_permission(self, request, view):
+    def has_permission(self, request, view):  ##TODO 权限控制 bug
         '''
         model 级别权限（先判断这个）
         :param request:
@@ -41,11 +42,6 @@ class UserPermission(permissions.BasePermission):
         :return:
         '''
         if bool(request.user and request.user.is_authenticated):
-            if request.method in ('GET', 'HEAD', 'OPTIONS', 'PUT'):
-                return True
-            elif request.user.is_superuser:
-                return True
-            else:
-                return False
+            return True
         else:
             return False

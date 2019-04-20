@@ -170,6 +170,12 @@ REST_FRAMEWORK = {
     ),
 }
 
+
+# TODO: bug to fix
+# AUTHENTICATION_BACKENDS = (
+#     'apps.x_user.views.UserCustomBackend',
+# )
+
 ## JWT conf
 
 ## :TODO： 字段设置失效，直接修改源代码，原因初步判断是Bug
