@@ -18,6 +18,7 @@ import datetime
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 sys.path.insert(0,os.path.join(BASE_DIR,'apps'))  #二级目录app
+sys.path.insert(0,os.path.join(BASE_DIR,'extra_apps'))  #二级目录app
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -33,6 +34,9 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+
+
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,12 +47,15 @@ INSTALLED_APPS = [
     'rest_framework',
     'xadmin',
     'crispy_forms',
-    'apps.x_user',
-    'apps.x_team',
-    'apps.x_competition',
+    # 'apps.users',
+    'users.apps.UsersConfig',
+    'teams.apps.TeamsConfig',
+    # 'apps.x_competition',
     'django_filters',
 
 ]
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -143,10 +150,11 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
+
+
 ##
 
-AUTH_USER_MODEL = 'x_user.UserProfile'
-
+AUTH_USER_MODEL = 'users.UserProfile'
 
 ## media路径
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -172,9 +180,9 @@ REST_FRAMEWORK = {
 
 
 # TODO: bug to fix
-# AUTHENTICATION_BACKENDS = (
-#     'apps.x_user.views.UserCustomBackend',
-# )
+AUTHENTICATION_BACKENDS = (
+    'users.views.UserCustomBackend',
+)
 
 ## JWT conf
 
