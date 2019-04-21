@@ -3,8 +3,8 @@
 # Author: Archerx
 # @time: 2019/4/14 下午 09:18
 
-from django.contrib.auth.models import User, Group #引入django身份验证机制User模块和Group模块
-from rest_framework import serializers #引入rest framework的serializers
+from django.contrib.auth.models import User, Group  # 引入django身份验证机制User模块和Group模块
+from rest_framework import serializers  # 引入rest framework的serializers
 from .models import UserProfile
 from teams.models import TeamProfile
 import re
@@ -12,14 +12,14 @@ from datetime import datetime
 from .models import VerifyCode
 from datetime import timedelta
 from CTF_AWD_Platform.settings import REGEX_MOBILE
-from rest_framework.validators import UniqueValidator  #直接调用封装好的
+from rest_framework.validators import UniqueValidator  # 直接调用封装好的
 
 from django.contrib.auth import get_user_model
+
 User = get_user_model()
 
 
-
-class TeamSerializer(serializers.ModelSerializer):  #嵌套外键序列化
+class TeamSerializer(serializers.ModelSerializer):  # 嵌套外键序列化
     class Meta:
         model = TeamProfile
         fields = '__all__'
@@ -27,22 +27,25 @@ class TeamSerializer(serializers.ModelSerializer):  #嵌套外键序列化
 
 class UserRegSerializer(serializers.ModelSerializer):
     '''
-    用户注册
+    用户注册序列化
     '''
-    user_team_id = TeamSerializer()
+    # user_team_id = TeamSerializer()  #暂时无用
     '''
-    write_only=True  设置这个属性为true,去确保create/update的时候这个字段被用到，序列化的时候，不被用到
+    write_only=True  设置这个属性为true,去确保create/update的时候这个字段被用到，序列化的时候，不被用到,也就是不会被返回
     '''
-    code = serializers.CharField(required=True,max_length=6,min_length=6,
+    code = serializers.CharField(required=True, max_length=6, min_length=6,
                                  error_messages={
                                      "blank": "请输入验证码",
                                      "required": "请输入验证码",
                                      "max_length": "验证码格式错误",
                                      "min_length": "验证码格式错误"
                                  },
-                                 write_only=True,help_text='验证码')  #新添加字段不会保存到数据库
+                                 write_only=True, help_text='验证码')  # 新添加字段不会保存到数据库
     user_phone = serializers.CharField(help_text="用户名", required=True, allow_blank=False,
-                                     validators=[UniqueValidator(queryset=User.objects.all(), message="用户已经存在")])
+                                       validators=[UniqueValidator(queryset=User.objects.all(), message="用户已经存在")])
+
+    password = serializers.CharField(required=True, allow_blank=False, style={'input_type': 'password'}, help_text='密码',
+                                     label='密码', write_only=True)
 
     def validate_code(self, code):
         # 验证码在数据库中是否存在，用户从前端post过来的值都会放入initial_data里面，排序(最新一条)。
@@ -78,31 +81,29 @@ class UserRegSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("code", "user_phone", "password","user_team_id")  #DRF web表单显示字段
+        fields = ("user_phone", "code", "password")  # DRF web表单显示字段
+        # fields = '__all__'
+
+
 #     class Meta:
 #         model = UserProfile
 #         # fields = ('id','user_name','user_school') #设置Api显示字段
 #         fields = '__all__'
 
 
-
-
-class UserRegisterSerializer(serializers.ModelSerializer):
+class UserDetailSerializer(serializers.ModelSerializer):
     '''
-    注册S
-    重写create方法
+    用户详情序列化
     '''
-    def create(self, validated_data):
-        user = super(UserRegisterSerializer,self).create(validated_data=validated_data)
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
+
     class Meta:
-        model = UserProfile
-        fields = '__all__'
+        model = User
+        fields = (
+            'username', 'password', 'user_gender', 'user_number', 'email', 'user_school', 'user_major', 'user_url',
+            'user_image', 'user_team_id', 'user_registertime')
 
 
-class SmsSerializer(serializers.Serializer):  #验证某些字段
+class SmsSerializer(serializers.Serializer):  # 验证某些字段
     mobile = serializers.CharField(max_length=11)
 
     def validate_user_phone(self, phone):

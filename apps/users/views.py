@@ -4,9 +4,9 @@ from django.shortcuts import render
 
 
 
-from .serializers import UserRegSerializer,SmsSerializer
+from .serializers import UserRegSerializer,SmsSerializer,UserDetailSerializer
 from .models import UserProfile,VerifyCode
-from rest_framework import mixins,generics
+from rest_framework import mixins,generics,permissions
 from rest_framework import viewsets
 from rest_framework.authentication import BaseAuthentication  #基础验证。必须重写其中的方法
 from rest_framework.permissions import IsAuthenticated,IsAdminUser  #直接调用
@@ -73,51 +73,48 @@ class UserCustomBackend(ModelBackend):
 
 
 # 可以考虑类似自定义generic 中的APIView 实现自定义通用控制
-class UserViewset(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):  #全部查询
+class UserViewset(mixins.UpdateModelMixin,mixins.CreateModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
     '''
-    User
-   '''
-    queryset = UserProfile.objects.all()
+    User查询、注册、修改
+    '''
+    # queryset = UserProfile.objects.all()
     serializer_class = UserRegSerializer
-    pagination_class = UserProfilePagination   #   warining #20
+    pagination_class = UserProfilePagination   #   fix warining #20
     authentication_classes = (JSONWebTokenAuthentication,SessionAuthentication)
-    permission_classes = (UserPermission,)
-
-
-
+    # permission_classes = (UserPermission,)
+    # lookup_field = 'id'  #自定义设置搜索哪个字段、在get_queryset之后过滤
     filter_backends = (DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter)
     filter_class = UserFilter  #自定义
 
     ordering_fields = ('id',)
     search_fields = ('=username', '=id')  # 搜索指定字段，支持多种搜索模式，默认模糊搜索
-    # filterset_fields = ('username','id')  #http://127.0.0.1:8000/api/user/?username=admin
 
-    # filter_backends = (filters.SearchFilter,)
-    # search_fields = ('=username','=id')  #搜索指定字段，支持多种搜索模式
 
-    # filter_backends = (filters.OrderingFilter,)   #排序过滤
-    # ordering_fields = ('username','id')
+    # def create(self, request, *args, **kwargs):
+    #     pass
 
-    def get_queryset(self):
-        pass
+    def get_queryset(self): #只返回当前用户记录
+        return UserProfile.objects.filter(username=self.request.user)
         # 如果有了这个那上面那句查询就不需要
         # 在这可以获取url后面的过滤然后进行一些操作
         # return UserProfile.objects.filter(id__gt=0)
+    def get_permissions(self):
+        if self.action == 'create':
+            return []
+        elif self.action == 'update':
+            return [permissions.IsAuthenticated()]
+        return [permissions.IsAuthenticated()]
 
-
-from .serializers import UserRegisterSerializer
-class UserRegView(mixins.CreateModelMixin,viewsets.GenericViewSet):
-    '''
-    注册View
-    '''
-    queryset = UserProfile.objects.all()
-    serializer_class = UserRegisterSerializer
-
-
-
-
-
-
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return UserDetailSerializer
+        elif self.action == 'retrieve':
+            return UserDetailSerializer
+        elif self.action == 'create':
+            return UserRegSerializer
+        return UserDetailSerializer
+    def get_object(self):
+        return self.request.user  #使得所有修改都是基于当前用户
 
 
 class SmsCodeViewset(mixins.CreateModelMixin,viewsets.GenericViewSet):

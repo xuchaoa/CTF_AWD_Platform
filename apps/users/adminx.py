@@ -27,7 +27,7 @@ xadmin.site.register(views.BaseAdminView,BaseSetting)
 
 class UserDisplay(object):
     change_user_password_template = None
-    list_display = ('username', 'user_major', 'user_number', 'user_phone', 'is_staff')
+    list_display = ('user_phone','username', 'user_major', 'user_number',  'is_staff')
     list_filter = ('is_staff', 'is_superuser', 'is_active')
     search_fields = ('username', 'first_name', 'last_name', 'email')
     ordering = ('username',)
@@ -77,5 +77,11 @@ class UserDisplay(object):
 
 # xadmin.site.unregister(models.UserProfile)
 xadmin.site.register(models.UserProfile,UserDisplay)
+
+
+class VerifyCodeDisplay(object):
+    list_display = ('id','code','mobile','add_time')
+
+xadmin.site.register(models.VerifyCode,VerifyCodeDisplay)
 
 

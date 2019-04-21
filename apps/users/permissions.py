@@ -19,23 +19,15 @@ class UserPermission(permissions.BasePermission):
         :param obj:
         :return:
         '''
+        return (obj.id == request.user.id)
 
-        if bool(request.user and request.user.is_authenticated):
-            if request.user.is_superuser:
-                return True
-            elif request.method in ('GET', 'HEAD', 'OPTIONS','PUT'):
-                return (obj.id == request.user.id)
-            else:
-                return False
-        else:
-            return False
 
     def has_permission(self, request, view):  ##bug fix
         '''
         model 级别权限（先判断这个）
         :param request:
         :param view:
-        :return:  all return False
+        :return:  authenticated users return True
         '''
         if bool(request.user and request.user.is_authenticated):
             return True
