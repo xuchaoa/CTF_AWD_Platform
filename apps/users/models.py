@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from apps.x_team.models import TeamProfile
+from teams.models import TeamProfile
+from django.utils import timezone
+import datetime
 from django.utils import timezone
 
 # Create your models here.
@@ -39,6 +41,7 @@ class UserProfile(AbstractUser):
         verbose_name = '用户管理'  #后台显示的字段信息
         verbose_name_plural = verbose_name
         ordering = ['id']  # fix #20
+        # abstract = True
 
     def __str__(self):
         return self.username
@@ -52,3 +55,20 @@ class user_log(models.Model):
         db_table = 'User_Log'
         verbose_name = '登陆日志'  # 后台显示的字段信息
         verbose_name_plural = verbose_name
+
+
+
+class VerifyCode(models.Model):
+    """
+    短信验证码
+    """
+    code = models.CharField(max_length=10, verbose_name="验证码")
+    mobile = models.CharField(max_length=11, verbose_name="电话")
+    add_time = models.DateTimeField(default=timezone.now, verbose_name="添加时间")
+
+    class Meta:
+        verbose_name = "短信验证"
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.code

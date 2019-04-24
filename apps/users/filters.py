@@ -17,6 +17,10 @@ class UserFilter(django_filters.rest_framework.FilterSet):
     #     else:
     #         return queryset.filter(username=request.user)
 
+    id = django_filters.NumberFilter(field_name='id',lookup_expr='gte')
+    username = django_filters.CharFilter(field_name='username',lookup_expr='icontains')  #模糊查询
+    # 上后这个就跟search差不多了
+
     class Meta:
         model = UserProfile
-        fields = ['id']
+        fields = ['id','username']

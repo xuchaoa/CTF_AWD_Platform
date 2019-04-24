@@ -27,7 +27,6 @@ requests==2.21.0
 six==1.12.0
 sqlparse==0.3.0
 tablib==0.13.0
-urllib3==1.24.1
 xadmin==2.0.1
 xlrd==1.2.0
 xlwt==1.3.0

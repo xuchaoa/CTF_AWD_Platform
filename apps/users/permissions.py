@@ -19,27 +19,15 @@ class UserPermission(permissions.BasePermission):
         :param obj:
         :return:
         '''
-        print(obj)
-        print(dir(obj))
-        print('ssss')
-        print(request.user.id)
-        if bool(request.user and request.user.is_authenticated):
-            print('1')
-            if request.method in ('GET', 'HEAD', 'OPTIONS','PUT'):
-                return (obj.id == request.user.id)
-            elif request.user.is_superuser:
-                return True
-            else:
-                return False
-        else:
-            return False
+        return (obj.id == request.user.id)
 
-    def has_permission(self, request, view):  ##TODO 权限控制 bug
+
+    def has_permission(self, request, view):  ##bug fix
         '''
         model 级别权限（先判断这个）
         :param request:
         :param view:
-        :return:
+        :return:  authenticated users return True
         '''
         if bool(request.user and request.user.is_authenticated):
             return True
