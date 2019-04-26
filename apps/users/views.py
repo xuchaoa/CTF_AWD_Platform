@@ -3,13 +3,12 @@ from django.shortcuts import render
 # Create your views here.
 
 
-
-from .serializers import UserRegSerializer,SmsSerializer,UserDetailSerializer
-from .models import UserProfile,VerifyCode
-from rest_framework import mixins,generics,permissions
+from .serializers import UserRegSerializer, SmsSerializer, UserDetailSerializer
+from .models import UserProfile, VerifyCode
+from rest_framework import mixins, generics, permissions
 from rest_framework import viewsets
-from rest_framework.authentication import BaseAuthentication  #基础验证。必须重写其中的方法
-from rest_framework.permissions import IsAuthenticated,IsAdminUser  #直接调用
+from rest_framework.authentication import BaseAuthentication  # 基础验证。必须重写其中的方法
+from rest_framework.permissions import IsAuthenticated, IsAdminUser  # 直接调用
 from .permissions import UserPermission
 from .filters import UserFilter
 from rest_framework import filters
@@ -17,7 +16,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.authentication import SessionAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.generics import ListAPIView,RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 # from .serializers import
 from random import choice
 from utils.SMS import SendSMS
@@ -29,30 +28,27 @@ class MyAuth(BaseAuthentication):
     '''
     自定义认证
     '''
+
     def authenticate(self, request):
         pass
+
     def authenticate_header(self, request):
         pass
 
 
-
-
-
-
-
-class  UserProfilePagination(PageNumberPagination):
+class UserProfilePagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
     page_query_param = 'page'
     max_page_size = 50
 
 
-
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 
-User = get_user_model()  #获取setting.py中AUTH_USER_MODEL指定的User model
+User = get_user_model()  # 获取setting.py中AUTH_USER_MODEL指定的User model
+
 
 class UserCustomBackend(ModelBackend):
     '''
@@ -60,9 +56,10 @@ class UserCustomBackend(ModelBackend):
     我们可以使用符号&或者|将多个Q()对象组合起来传递给filter()，exclude()，get()等函数。当多个Q()对象组合起来时，Django会自动生成一个新的Q()
     tips: 测试完成
     '''
+
     def authenticate(self, request, username=None, password=None, **kwargs):
         try:
-            user = User.objects.get(Q(username=username) | Q(user_phone = username))
+            user = User.objects.get(Q(username=username) | Q(user_phone=username))
             if user.check_password(password):
                 return user
         except Exception as e:
@@ -70,34 +67,36 @@ class UserCustomBackend(ModelBackend):
 
 
 
-
-
-# 可以考虑类似自定义generic 中的APIView 实现自定义通用控制
-class UserViewset(mixins.UpdateModelMixin,mixins.CreateModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+class UserViewset(mixins.UpdateModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     '''
     User查询、注册、修改
     '''
     # queryset = UserProfile.objects.all()
     serializer_class = UserRegSerializer
-    pagination_class = UserProfilePagination   #   fix warining #20
-    authentication_classes = (JSONWebTokenAuthentication,SessionAuthentication)
+    pagination_class = UserProfilePagination  # fix warining #20
+    authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
     # permission_classes = (UserPermission,)
     # lookup_field = 'id'  #自定义设置搜索哪个字段、在get_queryset之后过滤
-    filter_backends = (DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter)
-    filter_class = UserFilter  #自定义
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    filter_class = UserFilter  # 自定义
 
     ordering_fields = ('id',)
     search_fields = ('=username', '=id')  # 搜索指定字段，支持多种搜索模式，默认模糊搜索
 
-
     # def create(self, request, *args, **kwargs):
     #     pass
 
-    def get_queryset(self): #只返回当前用户记录
-        return UserProfile.objects.filter(username=self.request.user)
+    def get_queryset(self):
+        '''
+        list: 只能显示当前用户信息
         # 如果有了这个那上面那句查询就不需要
         # 在这可以获取url后面的过滤然后进行一些操作
         # return UserProfile.objects.filter(id__gt=0)
+        :return:
+        '''
+        return UserProfile.objects.filter(username=self.request.user)
+
+
     def get_permissions(self):
         if self.action == 'create':
             return []
@@ -106,18 +105,24 @@ class UserViewset(mixins.UpdateModelMixin,mixins.CreateModelMixin,mixins.Retriev
         return [permissions.IsAuthenticated()]
 
     def get_serializer_class(self):
-        if self.action == 'list':
+        if self.action == 'update':
             return UserDetailSerializer
         elif self.action == 'retrieve':
             return UserDetailSerializer
         elif self.action == 'create':
             return UserRegSerializer
         return UserDetailSerializer
+
     def get_object(self):
-        return self.request.user  #使得所有修改都是基于当前用户
+        '''
+        Retrieve和Delete  会调用
+        所有查询或者删除都是只返回当前用户，也就是基于当前用户。
+        :return:
+        '''
+        return self.request.user
 
 
-class SmsCodeViewset(mixins.CreateModelMixin,viewsets.GenericViewSet):
+class SmsCodeViewset(mixins.CreateModelMixin, viewsets.GenericViewSet):
     """
     发送短信验证码
     """
@@ -135,6 +140,13 @@ class SmsCodeViewset(mixins.CreateModelMixin,viewsets.GenericViewSet):
         return "".join(random_str)
 
     def create(self, request, *args, **kwargs):
+        '''
+        对CreateModelMixin 中的create方法进行重写，发送验证码并保存到数据库中
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        '''
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -143,9 +155,9 @@ class SmsCodeViewset(mixins.CreateModelMixin,viewsets.GenericViewSet):
         yun_pian = SendSMS()
 
         code = self.generate_code()
-        data = [code,'5']  #验证码在五分钟后失效
+        data = [code, '5']  # 验证码在五分钟后失效
 
-        sms_status = yun_pian.SendSms(to=mobile,data=data,tempId=1)
+        sms_status = yun_pian.SendSms(to=mobile, data=data, tempId=1)
         print(sms_status)
 
         if sms_status["statusCode"] != '000000':
@@ -158,14 +170,3 @@ class SmsCodeViewset(mixins.CreateModelMixin,viewsets.GenericViewSet):
             return Response({
                 "mobile": mobile
             }, status=status.HTTP_201_CREATED)
-
-
-
-
-
-
-
-
-
-
-

@@ -4,11 +4,6 @@
 
 python3.7 + Django 2.1.7 + 10.3.9-MariaDB + REST Framework 3.9.2 + xadmin + Celery + Vue
 
-Restful 风格的 API 应该是前后端分离的最佳实践
-
-
-
-
 
 
 ## x
@@ -31,6 +26,12 @@ dash: https://gitlab.com/k3oni/pydash-django-app/tree/master
 
 安全过滤初步想法：通过重载 SessionMiddleware 中间件来实现 或者自定义中间件
 
+排行榜性能优化：signals实现缓存  或者 字段添加索引
+
+邮箱验证注册功能
+
+WP提交功能
+
 ## 注意事项
 
 最后部署生产环境要更改 SECRET_KEY 
@@ -51,16 +52,19 @@ CORS实现：django-cors-headers
 日志记录：logging
 
 
-手机验证码方式进行登陆：
+手机（邮箱）验证码方式进行登陆：
 
 界面1： 手机号 验证码  用户名  密码
 
-界面2： 完善用户名、学号、班级、年级等信息
+界面2： 跳转登陆界面后 -> 完善用户名、学号、班级、年级等信息
 
 ## 安全问题
 
 不得删除username的UNIQUE约束，否则会造成越权
 
+## 测试
 
+1. 注册验证码逻辑验证 -ok
+2. 
 
 
