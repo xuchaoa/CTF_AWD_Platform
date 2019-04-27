@@ -1,8 +1,15 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+
 
 # Create your models here.
 
+
+
 class CompetitionProfile(models.Model):
+    '''
+    比赛信息表
+    '''
     competition_type_choice = (
         (0,'CTF'),
         (1,'AWD'),
@@ -14,7 +21,7 @@ class CompetitionProfile(models.Model):
     )
     competition_name = models.CharField(max_length=30,null=True, blank=False, verbose_name="比赛名称")
     competition_type = models.SmallIntegerField(choices=competition_type_choice,default=6,verbose_name='比赛类别')
-    competition_choicenum = models.CharField(max_length=30,null=True, blank=False, verbose_name="选择题数量")
+    competition_choicenum = models.IntegerField(verbose_name='选择题数量')
 
     class Meta:
         verbose_name = '比赛设置'
@@ -22,3 +29,7 @@ class CompetitionProfile(models.Model):
 
     def __str__(self):
         return self.competition_name
+
+
+
+

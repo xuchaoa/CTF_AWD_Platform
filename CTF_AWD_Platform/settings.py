@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'users.apps.UsersConfig',
     'teams.apps.TeamsConfig',
+    'competition.apps.CompetitionConfig',
     'django_filters',
 
 ]

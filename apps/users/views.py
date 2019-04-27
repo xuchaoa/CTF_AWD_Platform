@@ -170,3 +170,53 @@ class SmsCodeViewset(mixins.CreateModelMixin, viewsets.GenericViewSet):
             return Response({
                 "mobile": mobile
             }, status=status.HTTP_201_CREATED)
+
+
+
+
+
+
+
+
+
+# 下面是测试代码
+
+
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    """
+    Object-level permission to only allow owners of an object to edit it.
+    Assumes the model instance has an `owner` attribute.
+
+    """
+
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to any request,
+        # so we'll always allow GET, HEAD or OPTIONS requests.
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        # Instance must have an attribute named `owner`.
+        return obj.username == request.user
+
+from rest_framework import serializers
+class AddressSerializer(serializers.ModelSerializer):
+    '''
+    测试失败，因为username具有unique约束
+    '''
+    username = serializers.HiddenField(
+        default=serializers.CurrentUserDefault(),
+
+    )
+
+    class Meta:
+        model = User
+        fields = ("id", "username","user_phone")
+
+
+class PermissionTestViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,IsOwnerOrReadOnly)
+    authentication_classes = (JSONWebTokenAuthentication,SessionAuthentication)
+    serializer_class = AddressSerializer
+
+    def get_queryset(self):
+        return User.objects.filter(username=self.request.user)
