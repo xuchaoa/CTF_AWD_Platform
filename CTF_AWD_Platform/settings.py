@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'teams.apps.TeamsConfig',
     'competition.apps.CompetitionConfig',
+    'ctf.apps.CtfConfig',
+    'info.apps.InfoConfig',
     'django_filters',
 
 ]
@@ -97,9 +99,9 @@ DATABASES = {
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ctf',
-        'USER': 'blog',
-        'PASSWORD': 'blog.Dxxx',
-        'HOST': '10.6.65.106',
+        'USER': 'root',
+        'PASSWORD': 'SDUTctf123.',
+        'HOST': '10.6.65.231',
         'PORT': '3306',
         'TEST': {
                 'CHARSET': 'utf8',
@@ -151,7 +153,7 @@ STATIC_URL = '/static/'
 
 
 
-##
+## 重写user
 
 AUTH_USER_MODEL = 'users.UserProfile'
 
@@ -178,7 +180,7 @@ REST_FRAMEWORK = {
 }
 
 
-# TODO: bug to fix
+
 AUTHENTICATION_BACKENDS = (
     'users.views.UserCustomBackend',
 )

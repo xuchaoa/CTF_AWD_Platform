@@ -62,6 +62,8 @@ class UserCustomBackend(ModelBackend):
             user = User.objects.get(Q(username=username) | Q(user_phone=username))
             if user.check_password(password):
                 return user
+            else:
+                return None
         except Exception as e:
             return None
 
@@ -83,8 +85,7 @@ class UserViewset(mixins.UpdateModelMixin, mixins.CreateModelMixin, mixins.Retri
     ordering_fields = ('id',)
     search_fields = ('=username', '=id')  # 搜索指定字段，支持多种搜索模式，默认模糊搜索
 
-    # def create(self, request, *args, **kwargs):
-    #     pass
+
 
     def get_queryset(self):
         '''
@@ -105,8 +106,8 @@ class UserViewset(mixins.UpdateModelMixin, mixins.CreateModelMixin, mixins.Retri
         return [permissions.IsAuthenticated()]
 
     def get_serializer_class(self):
-        if self.action == 'update':
-            return UserDetailSerializer
+        if self.action == 'update':  #可能重置密码
+            return UserRegSerializer
         elif self.action == 'retrieve':
             return UserDetailSerializer
         elif self.action == 'create':
@@ -180,43 +181,43 @@ class SmsCodeViewset(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
 
 # 下面是测试代码
-
-
-class IsOwnerOrReadOnly(permissions.BasePermission):
-    """
-    Object-level permission to only allow owners of an object to edit it.
-    Assumes the model instance has an `owner` attribute.
-
-    """
-
-    def has_object_permission(self, request, view, obj):
-        # Read permissions are allowed to any request,
-        # so we'll always allow GET, HEAD or OPTIONS requests.
-        if request.method in permissions.SAFE_METHODS:
-            return True
-
-        # Instance must have an attribute named `owner`.
-        return obj.username == request.user
-
-from rest_framework import serializers
-class AddressSerializer(serializers.ModelSerializer):
-    '''
-    测试失败，因为username具有unique约束
-    '''
-    username = serializers.HiddenField(
-        default=serializers.CurrentUserDefault(),
-
-    )
-
-    class Meta:
-        model = User
-        fields = ("id", "username","user_phone")
-
-
-class PermissionTestViewSet(viewsets.ModelViewSet):
-    permission_classes = (IsAuthenticated,IsOwnerOrReadOnly)
-    authentication_classes = (JSONWebTokenAuthentication,SessionAuthentication)
-    serializer_class = AddressSerializer
-
-    def get_queryset(self):
-        return User.objects.filter(username=self.request.user)
+#
+#
+# class IsOwnerOrReadOnly(permissions.BasePermission):
+#     """
+#     Object-level permission to only allow owners of an object to edit it.
+#     Assumes the model instance has an `owner` attribute.
+#
+#     """
+#
+#     def has_object_permission(self, request, view, obj):
+#         # Read permissions are allowed to any request,
+#         # so we'll always allow GET, HEAD or OPTIONS requests.
+#         if request.method in permissions.SAFE_METHODS:
+#             return True
+#
+#         # Instance must have an attribute named `owner`.
+#         return obj.username == request.user
+#
+# from rest_framework import serializers
+# class AddressSerializer(serializers.ModelSerializer):
+#     '''
+#     测试失败，因为username具有unique约束
+#     '''
+#     username = serializers.HiddenField(
+#         default=serializers.CurrentUserDefault(),
+#
+#     )
+#
+#     class Meta:
+#         model = User
+#         fields = ("id", "username","user_phone")
+#
+#
+# class PermissionTestViewSet(viewsets.ModelViewSet):
+#     permission_classes = (IsAuthenticated,IsOwnerOrReadOnly)
+#     authentication_classes = (JSONWebTokenAuthentication,SessionAuthentication)
+#     serializer_class = AddressSerializer
+#
+#     def get_queryset(self):
+#         return User.objects.filter(username=self.request.user)

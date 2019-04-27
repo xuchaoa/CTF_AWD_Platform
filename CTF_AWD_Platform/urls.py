@@ -31,7 +31,7 @@ from users import views  #直接引用，虽然Pycharm报错
 router = routers.DefaultRouter() #路由
 router.register('users',views.UserViewset,base_name='users')
 router.register('codes',views.SmsCodeViewset,base_name='codes')
-router.register('test',views.PermissionTestViewSet,base_name='test')
+# router.register('test',views.PermissionTestViewSet,base_name='test')
 
 
 

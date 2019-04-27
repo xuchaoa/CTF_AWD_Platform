@@ -84,6 +84,17 @@ class UserRegSerializer(serializers.ModelSerializer):
         '''
         return attrs
 
+    def create(self, validated_data):
+        '''
+        不适用signals实现，因为在update时也会调用signals，会出现bug
+        :param validated_data:
+        :return:
+        '''
+        user = super(UserRegSerializer,self).create(validated_data=validated_data)
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+
     class Meta:
         model = User
         fields = ("user_phone", "code", "password")  # DRF web表单显示字段

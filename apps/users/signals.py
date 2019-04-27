@@ -13,6 +13,6 @@ User = get_user_model()
 @receiver(post_save, sender=User)
 def create_user(sender, instance=None, created=False, **kwargs):
     if created:  #如果是新建
-        password = instance.password
+        password = instance._password
         instance.set_password(password)
         instance.save()

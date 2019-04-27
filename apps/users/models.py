@@ -32,7 +32,7 @@ class UserProfile(AbstractUser):
     user_url = models.CharField(max_length=36, null=True, blank=True, verbose_name='个人网址')
     user_gender = models.SmallIntegerField(choices=gender_choices,default=2)
     user_ip = models.CharField(max_length=15,null=True,blank=True,verbose_name='ip')
-    user_team_id = models.ForeignKey(TeamProfile,null=True,blank=True,on_delete=models.SET_NULL,related_name='user_team')
+    user_team = models.ForeignKey(TeamProfile,null=True,blank=True,on_delete=models.SET_NULL,related_name='user_team')
     user_str = models.CharField(max_length=36,null=False, blank=True,verbose_name='随机字符串')
     user_registertime = models.DateTimeField(default=timezone.now,verbose_name='注册时间')
 
