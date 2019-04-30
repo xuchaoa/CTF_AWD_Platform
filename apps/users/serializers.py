@@ -35,14 +35,14 @@ class UserRegSerializer(serializers.ModelSerializer):
     '''
     code = serializers.CharField(required=True, max_length=6, min_length=6,
                                  error_messages={
-                                     "blank": "请输入验证码",
-                                     "required": "请输入验证码",
-                                     "max_length": "验证码格式错误",
-                                     "min_length": "验证码格式错误"
+                                     "blank": "字段Value为空",
+                                     "required": "无字段Key",
+                                     "max_length": "验证码长度错误",
+                                     "min_length": "验证码长度错误"
                                  },
-                                 write_only=True, help_text='验证码')  # 新添加字段不会保存到数据库
+                                 write_only=True, help_text='验证码')  # write_only=True只写入，不会在创建成功后返回
     user_phone = serializers.CharField(help_text="用户名", required=True, allow_blank=False,
-                                       validators=[UniqueValidator(queryset=User.objects.all(), message="用户已经存在")])
+                                       validators=[UniqueValidator(queryset=User.objects.all(), message="手机号已经存在")])
 
     password = serializers.CharField(required=True, allow_blank=False, style={'input_type': 'password'}, help_text='密码',
                                      label='密码', write_only=True)
@@ -65,11 +65,16 @@ class UserRegSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError("验证码不存在")
 
-    # 不加字段名的验证器作用于所有字段之上。attrs是字段 validate之后返回的总的dict
     def validate(self, attrs):
         # attrs["mobile"] = attrs["username"]
         # del attrs["code"]
         # return attrs
+        '''
+        不加字段名的验证器作用于所有字段之上，可以做一些全局的处理
+        :param attrs: attrs是字段 validate之后返回的总的dict
+        :return:
+        '''
+        attrs['username'] = attrs['user_phone']
         del attrs['code']
         '''
         这里注意一定要删除，否则下面错误：提示数据库中没有该字段
@@ -78,6 +83,17 @@ class UserRegSerializer(serializers.ModelSerializer):
         Original exception text was: 'UserProfile' object has no attribute 'code'.
         '''
         return attrs
+
+    def create(self, validated_data):
+        '''
+        不适用signals实现，因为在update时也会调用signals，会出现bug
+        :param validated_data:
+        :return:
+        '''
+        user = super(UserRegSerializer,self).create(validated_data=validated_data)
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
 
     class Meta:
         model = User
@@ -99,11 +115,14 @@ class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'username', 'password', 'user_gender', 'user_number', 'email', 'user_school', 'user_major', 'user_url',
+            'username','user_phone', 'user_gender', 'user_number', 'email', 'user_school', 'user_major', 'user_url',
             'user_image', 'user_team_id', 'user_registertime')
 
 
-class SmsSerializer(serializers.Serializer):  # 验证某些字段
+class SmsSerializer(serializers.Serializer):
+    '''
+    验证某些字段
+    '''
     mobile = serializers.CharField(max_length=11)
 
     def validate_user_phone(self, phone):
@@ -111,7 +130,7 @@ class SmsSerializer(serializers.Serializer):  # 验证某些字段
         验证手机号码(函数名称必须为validate_ + 字段名)
         """
         # 手机是否注册
-        if User.objects.filter(user_phone=phone).count():
+        if User.objects.filter(user_phone=phone).exists():
             raise serializers.ValidationError("用户已经存在")
 
         # 验证手机号码是否合法
@@ -120,7 +139,6 @@ class SmsSerializer(serializers.Serializer):  # 验证某些字段
 
         # 验证码发送频率
         one_mintes_ago = datetime.now() - timedelta(hours=0, minutes=1, seconds=0)
-        # 添加时间大于一分钟以前。也就是距离现在还不足一分钟
         if VerifyCode.objects.filter(add_time__gt=one_mintes_ago, user_phone=phone).count():
             raise serializers.ValidationError("距离上一次发送未超过60s")
 

@@ -32,7 +32,7 @@ class UserProfile(AbstractUser):
     user_url = models.CharField(max_length=36, null=True, blank=True, verbose_name='个人网址')
     user_gender = models.SmallIntegerField(choices=gender_choices,default=2)
     user_ip = models.CharField(max_length=15,null=True,blank=True,verbose_name='ip')
-    user_team_id = models.ForeignKey(TeamProfile,null=True,blank=True,on_delete=models.SET_NULL,related_name='user_team121')
+    user_team = models.ForeignKey(TeamProfile,null=True,blank=True,on_delete=models.SET_NULL,related_name='user_team')
     user_str = models.CharField(max_length=36,null=False, blank=True,verbose_name='随机字符串')
     user_registertime = models.DateTimeField(default=timezone.now,verbose_name='注册时间')
 
@@ -72,3 +72,18 @@ class VerifyCode(models.Model):
 
     def __str__(self):
         return self.code
+
+
+class UserLoginLog(models.Model):
+    user = models.ForeignKey(UserProfile,on_delete=models.CASCADE,verbose_name='用户')
+    user_login_time = models.DateTimeField(default=timezone.now,verbose_name='登陆时间')
+    user_login_ip = models.CharField(max_length=15,verbose_name='登陆ip')
+    user_login_agent = models.CharField(max_length=200,verbose_name='UA')
+    user_login_os = models.CharField(max_length=50,verbose_name='OS')
+
+    class Meta:
+        verbose_name = '用户登录日志'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return '%s(%s)'(self.user.username,self.user_login_ip)
