@@ -86,7 +86,6 @@ class UserViewset(mixins.UpdateModelMixin, mixins.CreateModelMixin, mixins.Retri
     search_fields = ('=username', '=id')  # 搜索指定字段，支持多种搜索模式，默认模糊搜索
 
 
-
     def get_queryset(self):
         '''
         list: 只能显示当前用户信息
