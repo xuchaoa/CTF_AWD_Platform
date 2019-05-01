@@ -84,6 +84,7 @@ class UserRegSerializer(serializers.ModelSerializer):
         '''
         return attrs
 
+
     def create(self, validated_data):
         '''
         不适用signals实现，因为在update时也会调用signals，会出现bug
