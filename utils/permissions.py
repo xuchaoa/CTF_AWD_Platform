@@ -33,3 +33,6 @@ class IsAuthAndIsOwnerOrReadOnly(permissions.BasePermission):
             return True
         else:
             return False
+
+class TeamPermission(permissions.BasePermission):
+    pass
