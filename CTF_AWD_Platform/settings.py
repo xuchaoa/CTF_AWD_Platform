@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'competition.apps.CompetitionConfig',
     'ctf.apps.CtfConfig',
     'info.apps.InfoConfig',
+    'choice.apps.ChoiceConfig',
+    'notice.apps.NoticeConfig',
     'django_filters',
 
 ]

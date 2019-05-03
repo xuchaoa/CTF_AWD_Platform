@@ -1,16 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from competition.models import CompetitionProfile
+from users.models import UserProfile
+
 # Create your models here.
 
 
 class TeamProfile(models.Model):
-    team_name = models.CharField(max_length=50,default='',verbose_name='队伍名称')
-    team_captain = models.CharField(max_length=50,default='',verbose_name='队长')
-    team_member1 = models.CharField(max_length=50,default='',verbose_name='队员1')
-    team_member2 = models.CharField(max_length=50,default='',verbose_name='队员2')
-    team_member3 = models.CharField(max_length=50,default='',verbose_name='队员3')
-    competition_id = models.ForeignKey(CompetitionProfile,null=True,blank=True,on_delete=models.SET_NULL,related_name='team_competition')
+    team_name = models.CharField(max_length=50,null=True,blank=False,verbose_name='队伍名称')
+    team_captain = models.ForeignKey(UserProfile,null=True,blank=True,on_delete=models.CASCADE,related_name='team_captain')
+    team_member1 = models.ForeignKey(UserProfile,null=True,blank=True,on_delete=models.CASCADE,related_name='team_member1')
+    team_member2 = models.ForeignKey(UserProfile,null=True,blank=True,on_delete=models.CASCADE,related_name='team_member2')
+    team_member3 = models.ForeignKey(UserProfile,null=True,blank=True,on_delete=models.CASCADE,related_name='team_member3')
+    competition = models.ForeignKey(CompetitionProfile,null=True,blank=True,on_delete=models.SET_NULL,related_name='team_competition')
 
 
     class Meta:

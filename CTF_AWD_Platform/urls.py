@@ -26,11 +26,17 @@ from rest_framework.documentation import include_docs_urls
 #rest
 from django.conf.urls import url, include
 from rest_framework import routers
-from users import views  #直接引用，虽然Pycharm报错
+from users.views import UserViewset,SmsCodeViewset
+from teams.views import TeamViewSet
+from competition.views import CompetitionViewSet
 #
 router = routers.DefaultRouter() #路由
-router.register('users',views.UserViewset,base_name='users')
-router.register('codes',views.SmsCodeViewset,base_name='codes')
+router.register('users',UserViewset,base_name='users')
+router.register('codes',SmsCodeViewset,base_name='codes')
+router.register('teams',TeamViewSet,base_name='teams')
+router.register('competitions',CompetitionViewSet,base_name='competitions')
+
+
 # router.register('test',views.PermissionTestViewSet,base_name='test')
 
 

@@ -21,7 +21,7 @@ class CompetitionProfile(models.Model):
     )
     competition_name = models.CharField(max_length=30,null=True, blank=False, verbose_name="比赛名称")
     competition_type = models.SmallIntegerField(choices=competition_type_choice,default=6,verbose_name='比赛类别')
-    competition_choicenum = models.IntegerField(verbose_name='选择题数量')
+    competition_choicenum = models.IntegerField(default=50,verbose_name='选择题数量')
 
     class Meta:
         verbose_name = '比赛设置'
