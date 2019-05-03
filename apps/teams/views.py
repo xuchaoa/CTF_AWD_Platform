@@ -14,11 +14,12 @@ from django.db.models import Q
 class TeamViewSet(viewsets.ModelViewSet):
     '''
     团队操作:增删改查
-    查：测试通过
-    增加：
+    查：团队成员均可查看  --> 测试通过
+    创建：任何人
+    修改：只有队长可以修改
     '''
     # queryset = TeamProfile.objects.all()
-    permission_classes = (IsAuthAndIsOwnerOrReadOnly,)
+    # permission_classes = (IsAuthAndIsOwnerOrReadOnly,)
     authentication_classes = (JSONWebTokenAuthentication,SessionAuthentication)
     # serializer_class = TeamSerializer
     lookup_field = 'id'
@@ -27,6 +28,11 @@ class TeamViewSet(viewsets.ModelViewSet):
         if self.action == 'create':  #
             return TeamAddSerializer
         return TeamSerializer
+
+    def get_permissions(self):
+        if self.action == 'update':
+            return []
+        return [IsAuthAndIsOwnerOrReadOnly()]
 
     def get_queryset(self):
         return TeamProfile.objects.filter(Q(team_captain=self.request.user)|
