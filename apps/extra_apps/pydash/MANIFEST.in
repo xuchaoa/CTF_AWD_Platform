@@ -1,0 +1,4 @@
+include LICENSE.md
+include README.rst
+recursive-include pydash/static *
+recursive-include pydash/templates *

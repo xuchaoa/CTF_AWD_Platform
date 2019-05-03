@@ -12,11 +12,13 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import sys
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 sys.path.insert(0,os.path.join(BASE_DIR,'apps'))  #二级目录app
+sys.path.insert(0,os.path.join(BASE_DIR,'extra_apps'))  #二级目录app
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -32,6 +34,9 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+
+
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,11 +47,16 @@ INSTALLED_APPS = [
     'rest_framework',
     'xadmin',
     'crispy_forms',
-    'apps.x_user',
-    'apps.x_team',
-    'apps.x_competition',
+    'users.apps.UsersConfig',
+    'teams.apps.TeamsConfig',
+    'competition.apps.CompetitionConfig',
+    'ctf.apps.CtfConfig',
+    'info.apps.InfoConfig',
+    'django_filters',
 
 ]
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -89,9 +99,9 @@ DATABASES = {
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ctf',
-        'USER': 'blog',
-        'PASSWORD': 'blog.Dxxx',
-        'HOST': '10.6.65.106',
+        'USER': 'root',
+        'PASSWORD': 'SDUTctf123.',
+        'HOST': '10.6.65.231',
         'PORT': '3306',
         'TEST': {
                 'CHARSET': 'utf8',
@@ -141,12 +151,58 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
-##
 
-AUTH_USER_MODEL = 'x_user.UserProfile'
 
+## 重写user
+
+AUTH_USER_MODEL = 'users.UserProfile'
 
 ## media路径
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+
+## DRF config
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+    'DEFAULT_PERMISSION_CLASSES': (
+        # 'rest_framework.permissions.IsAuthenticated',  # 允许认证用户
+    ),
+
+    'JWT_PAYLOAD_HANDLER':'rest_framework_jwt.utils.jwt_payload_handler',
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',    #sessionid验证方式
+        # 'rest_framework.authentication.BasicAuthentication',  #账号密码验证方式
+    ),
+}
+
+
+
+AUTHENTICATION_BACKENDS = (
+    'users.views.UserCustomBackend',
+)
+
+## JWT conf
+
+## :TODO： 字段设置失效，直接修改源代码，原因初步判断是Bug
+
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=3),   #有效期180分钟
+    #定义与令牌一起发送的Authorization标头值前缀
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
+    'JWT_AUTH_COOKIE': None,
+    'JWT_ALGORITHM': 'HS256',
+    'JWT_ALLOW_REFRESH': True,   #允许刷新
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
+
+}
+
+## 容联云通讯平台
+# ACCOUNT_SID = '8a216da86a2a8174016a39f0748d09ec'
+# AUTH_TOKEN = 'dd49474506d14a07b5acffdf0468c44f'
+
+# 手机号码正则表达式
+REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"

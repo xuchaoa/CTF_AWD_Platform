@@ -18,25 +18,38 @@ from django.urls import path,re_path
 import xadmin
 from django.conf import settings
 from django.conf.urls.static import static
+# from apps.extra_apps.pydash import pydash
+from rest_framework.documentation import include_docs_urls
+
 
 
 #rest
 from django.conf.urls import url, include
 from rest_framework import routers
-# from tutorial.quickstart import views  官网模块引入写法，有误
-from apps.x_user import views
+from users import views  #直接引用，虽然Pycharm报错
+#
 router = routers.DefaultRouter() #路由
-# router.register(r'users', views.UserViewSet) #路由地址与接口配置
-# router.register(r'groups', views.GroupViewSet)
+router.register('users',views.UserViewset,base_name='users')
+router.register('codes',views.SmsCodeViewset,base_name='codes')
+# router.register('test',views.PermissionTestViewSet,base_name='test')
+
+
+
+from rest_framework_jwt.views import obtain_jwt_token,refresh_jwt_token,verify_jwt_token
 
 
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('x_admin/',xadmin.site.urls),
+    # path('',include('apps.x_user.urls')),
     #rest
-    re_path(r'^', include(router.urls)), #包含进路由配置的url
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')) #浏览器测试接口配置
+    re_path(r'^api/', include(router.urls)), #包含进路由配置的url
+    re_path(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')), #浏览器测试的登录接口
+    path('api-token-auth/',obtain_jwt_token),
+    path('api-token-refresh/',refresh_jwt_token),  #刷新token api  只有非过期token才有效
+    path('api-token-verify/',verify_jwt_token),  # API View that checks the veracity of a token, returning the token if it is valid
+    path('docs/',include_docs_urls(title='SDUTCTF')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

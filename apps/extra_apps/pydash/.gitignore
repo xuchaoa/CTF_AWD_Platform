@@ -1,0 +1,6 @@
+dist/
+build/
+*.egg-info/
+*.pyc
+._*
+*.sqlite3
