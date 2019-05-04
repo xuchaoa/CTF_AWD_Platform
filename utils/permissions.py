@@ -20,8 +20,8 @@ class IsAuthAndIsOwnerOrReadOnly(permissions.BasePermission):
         '''
         if request.method in permissions.SAFE_METHODS:  #SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
             return True
-        return (obj.id == request.user.id)
-
+        # return (obj.id == request.user.id)
+        return True
     def has_permission(self, request, view):  ##bug fix
         '''
         model 级别权限（先判断这个）

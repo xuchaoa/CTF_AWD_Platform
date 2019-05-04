@@ -7,7 +7,7 @@ from rest_framework import serializers
 from .models import TeamProfile
 from competition.serializers import CompetitionSerializer
 
-class TeamSerializer(serializers.ModelSerializer):
+class TeamDetailSerializer(serializers.ModelSerializer):
     '''
     增加5476
     '''
@@ -17,15 +17,15 @@ class TeamSerializer(serializers.ModelSerializer):
         model = TeamProfile
         fields = '__all__'
 
-class TeamAddSerializer(serializers.ModelSerializer):
+class TeamAddOrUpdateSerializer(serializers.ModelSerializer):
     '''
     用于增加用户
     '''
-    # team_captain = serializers.HiddenField(default=serializers.CurrentUserDefault)
-    # def validate(self, attrs):
-    #     attrs['team_captain'] = self.context['request'].user.id
-    #     return attrs
+    team_captain = serializers.HiddenField(
+        default=serializers.CurrentUserDefault
+    )
 
     class Meta:
+
         model = TeamProfile
         fields = '__all__'

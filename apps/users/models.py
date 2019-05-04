@@ -46,16 +46,6 @@ class UserProfile(AbstractUser):
     def __str__(self):
         return self.username
 
-class user_log(models.Model):
-    '''
-    用户登陆记录
-    '''
-
-    class Meta:
-        db_table = 'User_Log'
-        verbose_name = '登陆日志'  # 后台显示的字段信息
-        verbose_name_plural = verbose_name
-
 
 
 class VerifyCode(models.Model):
@@ -75,7 +65,7 @@ class VerifyCode(models.Model):
 
 
 class UserLoginLog(models.Model):
-    user = models.ForeignKey(UserProfile,on_delete=models.CASCADE,verbose_name='用户')
+    user = models.ForeignKey(UserProfile,null=True,blank=True,on_delete=models.CASCADE,verbose_name='用户',related_name='user_log')
     user_login_time = models.DateTimeField(default=timezone.now,verbose_name='登陆时间')
     user_login_ip = models.CharField(max_length=15,verbose_name='登陆ip')
     user_login_agent = models.CharField(max_length=200,verbose_name='UA')

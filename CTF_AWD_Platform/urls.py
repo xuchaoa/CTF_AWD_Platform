@@ -26,7 +26,7 @@ from rest_framework.documentation import include_docs_urls
 #rest
 from django.conf.urls import url, include
 from rest_framework import routers
-from users.views import UserViewset,SmsCodeViewset
+from users.views import UserViewset,SmsCodeViewset,UserLogViewSet
 from teams.views import TeamViewSet
 from competition.views import CompetitionViewSet
 #
@@ -35,6 +35,7 @@ router.register('users',UserViewset,base_name='users')
 router.register('codes',SmsCodeViewset,base_name='codes')
 router.register('teams',TeamViewSet,base_name='teams')
 router.register('competitions',CompetitionViewSet,base_name='competitions')
+router.register('logs',UserLogViewSet,base_name='logs')
 
 
 # router.register('test',views.PermissionTestViewSet,base_name='test')

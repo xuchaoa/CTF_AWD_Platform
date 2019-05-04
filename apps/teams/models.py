@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 from competition.models import CompetitionProfile
 from users.models import UserProfile
 
@@ -7,6 +6,9 @@ from users.models import UserProfile
 
 
 class TeamProfile(models.Model):
+    '''
+    team表
+    '''
     team_name = models.CharField(max_length=50,null=True,blank=False,verbose_name='队伍名称')
     team_captain = models.ForeignKey(UserProfile,null=True,blank=True,on_delete=models.CASCADE,related_name='team_captain')
     team_member1 = models.ForeignKey(UserProfile,null=True,blank=True,on_delete=models.CASCADE,related_name='team_member1')

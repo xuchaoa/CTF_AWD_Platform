@@ -9,7 +9,7 @@ from .models import UserProfile
 from teams.models import TeamProfile
 import re
 from datetime import datetime
-from .models import VerifyCode
+from .models import VerifyCode,UserLoginLog
 from datetime import timedelta
 from CTF_AWD_Platform.settings import REGEX_MOBILE
 from rest_framework.validators import UniqueValidator  # 直接调用封装好的
@@ -117,7 +117,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'username','user_phone', 'user_gender', 'user_number', 'email', 'user_school', 'user_major', 'user_url',
-            'user_image', 'user_team_id', 'user_registertime')
+            'user_image', 'user_registertime')
 
 
 class SmsSerializer(serializers.Serializer):
@@ -144,3 +144,13 @@ class SmsSerializer(serializers.Serializer):
             raise serializers.ValidationError("距离上一次发送未超过60s")
 
         return phone
+
+
+
+class LogSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+    class Meta:
+        model = UserLoginLog
+        fields = '__all__'
