@@ -29,7 +29,9 @@ SECRET_KEY = '03tt2_6@txd9v1f7yj*@8f$l9^#h_j9si4tf*a-ctkinrsz77@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
+#设置允许任何ip访问
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition

@@ -9,7 +9,7 @@ from competition.serializers import CompetitionSerializer
 
 class TeamDetailSerializer(serializers.ModelSerializer):
     '''
-    增加5476
+    查询使用
     '''
 
     competition = CompetitionSerializer()
