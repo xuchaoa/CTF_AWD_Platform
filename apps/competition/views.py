@@ -7,6 +7,7 @@ from .models import CompetitionProfile
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework import mixins
+from rest_framework.permissions import IsAuthenticated
 
 class CompetitionViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
     '''
@@ -19,3 +20,4 @@ class CompetitionViewSet(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewset
     queryset = CompetitionProfile.objects.all()
     serializer_class = CompetitionSerializer
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
+    permission_classes = (IsAuthenticated,)
