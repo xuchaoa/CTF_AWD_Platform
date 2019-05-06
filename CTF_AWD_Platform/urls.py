@@ -13,7 +13,6 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path,re_path
 import xadmin
 from django.conf import settings
@@ -24,7 +23,7 @@ from rest_framework.documentation import include_docs_urls
 
 
 #rest
-from django.conf.urls import url, include
+from django.conf.urls import include
 from rest_framework import routers
 from users.views import UserViewset,SmsCodeViewset,UserLogViewSet
 from teams.views import TeamViewSet
@@ -48,7 +47,7 @@ from rest_framework_jwt.views import obtain_jwt_token,refresh_jwt_token,verify_j
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
-    path('x_admin/',xadmin.site.urls),
+    path('x_admin/', xadmin.site.urls),
     # path('',include('apps.x_user.urls')),
     #rest
     re_path(r'^api/', include(router.urls)), #包含进路由配置的url

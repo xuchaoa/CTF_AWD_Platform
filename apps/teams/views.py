@@ -40,9 +40,9 @@ class TeamViewSet(viewsets.ModelViewSet):
     '''
     团队操作:增删改查
     查：团队成员均可查看  --> 测试通过
-    创建：任何人登陆的人 - TODO bug to fix
-    修改：只有队长可以修改  ok
-    删除：只有队长可以删除   ok
+    创建：任何人登陆的人 --> 测试通过
+    修改：只有队长可以修改 --> ok
+    删除：只有队长可以删除  --> ok
     '''
     # queryset = TeamProfile.objects.all()
     # permission_classes = (IsAuthenticated,)
