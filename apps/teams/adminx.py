@@ -9,4 +9,4 @@ import xadmin
 class TeamDispaly(object):
     list_display = ('id','team_name')
 
-xadmin.site.register(TeamProfile,TeamDispaly)
+xadmin.site.register(TeamProfile, TeamDispaly)

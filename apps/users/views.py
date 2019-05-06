@@ -3,8 +3,8 @@ from django.shortcuts import render
 # Create your views here.
 
 
-from .serializers import UserRegSerializer, SmsSerializer, UserDetailSerializer
-from .models import UserProfile, VerifyCode
+from .serializers import UserRegSerializer, SmsSerializer, UserDetailSerializer, LogSerializer
+from .models import UserProfile, VerifyCode ,UserLoginLog
 from rest_framework import mixins, generics, permissions
 from rest_framework import viewsets
 from rest_framework.authentication import BaseAuthentication  # 基础验证。必须重写其中的方法
@@ -68,7 +68,6 @@ class UserCustomBackend(ModelBackend):
             return None
 
 
-
 class UserViewset(mixins.UpdateModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     '''
     User查询、注册、修改
@@ -85,7 +84,6 @@ class UserViewset(mixins.UpdateModelMixin, mixins.CreateModelMixin, mixins.Retri
     ordering_fields = ('id',)
     search_fields = ('=username', '=id')  # 搜索指定字段，支持多种搜索模式，默认模糊搜索
 
-
     def get_queryset(self):
         '''
         list: 只能显示当前用户信息
@@ -96,7 +94,6 @@ class UserViewset(mixins.UpdateModelMixin, mixins.CreateModelMixin, mixins.Retri
         '''
         return UserProfile.objects.filter(username=self.request.user)
 
-
     def get_permissions(self):
         if self.action == 'create':
             return []
@@ -105,7 +102,7 @@ class UserViewset(mixins.UpdateModelMixin, mixins.CreateModelMixin, mixins.Retri
         return [permissions.IsAuthenticated()]
 
     def get_serializer_class(self):
-        if self.action == 'update':  #可能重置密码
+        if self.action == 'update':  # 可能重置密码
             return UserRegSerializer
         elif self.action == 'retrieve':
             return UserDetailSerializer
@@ -172,12 +169,14 @@ class SmsCodeViewset(mixins.CreateModelMixin, viewsets.GenericViewSet):
             }, status=status.HTTP_201_CREATED)
 
 
+class UserLogViewSet(viewsets.ModelViewSet):
+    '''
 
-
-
-
-
-
+    '''
+    queryset = UserLoginLog.objects.all()
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
+    serializer_class = LogSerializer
 
 # 下面是测试代码
 #
