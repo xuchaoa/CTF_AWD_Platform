@@ -29,6 +29,8 @@ from users.views import UserViewset,SmsCodeViewset,UserLogViewSet
 from teams.views import TeamViewSet
 from competition.views import CompetitionViewSet
 from ctf.views import CtfViewSet
+from info.views import CtfCompetitionTableViewSet,CtfSubmitViewSet
+
 
 #
 router = routers.DefaultRouter() #路由
@@ -38,6 +40,9 @@ router.register('teams',TeamViewSet,base_name='teams')
 router.register('competitions',CompetitionViewSet,base_name='competitions')
 router.register('logs',UserLogViewSet,base_name='logs')
 router.register('ctfs',CtfViewSet,base_name='ctfs')
+router.register('CtfCompetitionTables',CtfCompetitionTableViewSet,base_name='CtfCompetitionTables')
+router.register('CtfSubmits',CtfSubmitViewSet,base_name='CtfSubmits')
+
 
 
 # router.register('test',views.PermissionTestViewSet,base_name='test')

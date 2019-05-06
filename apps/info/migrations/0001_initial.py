@@ -159,10 +159,6 @@ class Migration(migrations.Migration):
             unique_together={('user', 'team', 'competition')},
         ),
         migrations.AlterUniqueTogether(
-            name='ctfsubmit',
-            unique_together={('user', 'team', 'competition')},
-        ),
-        migrations.AlterUniqueTogether(
             name='ctfcompetitiontable',
             unique_together={('ctf', 'competition')},
         ),
