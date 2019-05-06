@@ -28,6 +28,7 @@ from rest_framework import routers
 from users.views import UserViewset,SmsCodeViewset,UserLogViewSet
 from teams.views import TeamViewSet
 from competition.views import CompetitionViewSet
+
 #
 router = routers.DefaultRouter() #路由
 router.register('users',UserViewset,base_name='users')
