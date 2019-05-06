@@ -22,7 +22,7 @@ class TeamCompetitionInfo(models.Model):
     score_awd = models.IntegerField(default=0, verbose_name="awd分数")
 
     class Meta:
-        verbose_name = '比赛情况'
+        verbose_name = '团队比赛详情'
         verbose_name_plural = verbose_name
         unique_together = ('team', 'competition')  # 多个字段作为一个联合唯一索引
 
@@ -40,7 +40,7 @@ class UserCompetitionInfo(models.Model):
     score_awd = models.IntegerField(default=0, verbose_name="awd总分")
 
     class Meta:
-        verbose_name = '比赛情况'
+        verbose_name = '个人比赛详情'
         verbose_name_plural = verbose_name
         unique_together = ('user', 'team', 'competition')
 
