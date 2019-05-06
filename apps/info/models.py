@@ -73,14 +73,14 @@ class Illegality(models.Model):
 
 class CtfCompetitionTable(models.Model):
     '''
-    每场比赛的CTF题目
+    每场比赛的CTF题目,包括提交次数字段
     '''
     ctf = models.ForeignKey(CtfLibrary, on_delete=models.CASCADE, verbose_name='题目编号')
     competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛编号')
     submit_times = models.IntegerField(default=0, verbose_name='正确提交次数')
 
     class Meta:
-        verbose_name = '比赛CTF题目'
+        verbose_name = '比赛题目'
         verbose_name_plural = verbose_name
         unique_together = ('ctf', 'competition')
 
