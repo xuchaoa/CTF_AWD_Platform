@@ -6,6 +6,7 @@
 from rest_framework import serializers
 from .models import TeamProfile
 from competition.serializers import CompetitionSerializer
+from rest_framework.validators import UniqueValidator
 
 class TeamDetailSerializer(serializers.ModelSerializer):
     '''
@@ -32,11 +33,7 @@ class TeamAddOrUpdateSerializer(serializers.ModelSerializer):
     team_captain = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
     )
-    # team_captain = serializers.PrimaryKeyRelatedField(
-    #     default=serializers.CurrentUserDefault(),read_only=True
-    # )
-
+    team_name = serializers.CharField(max_length=100,validators=[UniqueValidator(queryset=TeamProfile.objects.all())])
     class Meta:
-
         model = TeamProfile
         fields = '__all__'

@@ -10,6 +10,8 @@ from .models import TeamProfile
 from utils.permissions import IsAuthAndIsOwnerOrReadOnly
 from django.db.models import Q
 from rest_framework import permissions
+from info.models import TeamCompetitionInfo
+from competition.models import CompetitionProfile
 
 
 # Create your views here.
@@ -42,8 +44,11 @@ class TeamViewSet(viewsets.ModelViewSet):
     团队操作:增删改查
     查：团队成员均可查看  --> 测试通过
     创建：任何人登陆的人 --> 测试通过
+        自动在TeamCompetitionInfo中添加一条记录  --> ok
     修改：只有队长可以修改 --> ok
+        修改是添加比赛操作：自动在TeamCompetitionInfo中添加一条记录  -->  ok
     删除：只有队长可以删除  --> ok
+        删除队伍时删除相应记录  -->  ok
     '''
     # queryset = TeamProfile.objects.all()
     # permission_classes = (IsAuthenticated,)
@@ -71,3 +76,30 @@ class TeamViewSet(viewsets.ModelViewSet):
                                           Q(team_member1=self.request.user) |
                                           Q(team_member2=self.request.user) |
                                           Q(team_member3=self.request.user))
+
+    def perform_create(self, serializer):
+        team = serializer.save()
+        if team.competition is not None:
+            TeamComInfo = TeamCompetitionInfo()
+            TeamComInfo.team = team
+            TeamComInfo.competition = team.competition
+            TeamComInfo.save()
+
+    def perform_update(self, serializer):
+        team = serializer.save()
+        if team.competition is not None:
+            TeamComInfo = TeamCompetitionInfo()
+            TeamComInfo.team = team
+            TeamComInfo.competition = team.competition
+            TeamComInfo.save()
+    def perform_destroy(self, instance):
+        competition = instance.competition
+        TeamComInfo = TeamCompetitionInfo.objects.filter(Q(team=instance) & Q(competition=competition))
+        TeamComInfo.delete()
+
+        instance.delete()
+
+
+
+
+
