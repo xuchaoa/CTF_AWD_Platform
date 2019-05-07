@@ -5,7 +5,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.authentication import SessionAuthentication
-from .serializers import CtfCompetitionTableSerializer, CtfSubmitSerializer
+from .serializers import CtfCompetitionTableSerializer, CtfSubmitAddSerializer, CtfSubmitDetailSerializer
 from rest_framework import mixins
 from .models import CtfCompetitionTable,CtfSubmit
 from rest_framework import permissions
@@ -64,10 +64,14 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,mixins.C
     增加： Auth并且参加了该比赛，并且在比赛时间内
     删除： None
     修改： None
-    查询： 只显示不敏感字段
+    查询： 只显示不敏感字段  --> ok
     '''
     queryset = CtfSubmit.objects.all()
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
-    serializer_class = CtfSubmitSerializer
+    # serializer_class = CtfSubmitSerializer
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return CtfSubmitAddSerializer
+        return CtfSubmitDetailSerializer
 

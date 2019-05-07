@@ -82,7 +82,7 @@ class CtfCompetitionTable(models.Model):
     class Meta:
         verbose_name = '比赛题目'
         verbose_name_plural = verbose_name
-        unique_together = ('ctf', 'competition')  
+        unique_together = ('ctf', 'competition')
     def __str__(self):
         return '{}.{}'.format(self.ctf,self.competition)
 
@@ -92,9 +92,8 @@ class CtfSubmit(models.Model):
     CTF提交flag表
     '''
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='队员')
-    team = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name='队伍')
     competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛')
-    submit_ctf = models.ForeignKey(CtfLibrary, on_delete=models.CASCADE, verbose_name="提交题目")
+    ctf = models.ForeignKey(CtfLibrary, on_delete=models.CASCADE, verbose_name="提交题目")
     submit_time = models.DateTimeField(default=timezone.now, verbose_name="提交时间")
     submit_flag = models.CharField(max_length=255, verbose_name="提交flag")
     submit_result = models.BooleanField(verbose_name="判定结果")

@@ -9,6 +9,6 @@ xadmin.site.register(CtfCompetitionTable,CtfCompetitionTableDisplay)
 
 
 class CtfSubmitDisplay(object):
-    list_display = ('id', 'user','team','competition','submit_time','submit_ctf','submit_flag','submit_result')
+    list_display = ('id', 'user','team','competition','submit_time','ctf','submit_flag','submit_result')
 
 xadmin.site.register(CtfSubmit,CtfSubmitDisplay)
