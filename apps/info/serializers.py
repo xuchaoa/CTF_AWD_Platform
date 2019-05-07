@@ -42,7 +42,7 @@ class CtfSubmitAddSerializer(serializers.ModelSerializer):
     1.需要判断用户时都参加该比赛(不进行判断，后端自动填充)  ok
 
     2.是否在比赛时间内 TODO this
-    3.判断用户提交的flag是否正确，并更改相应表格
+    3.判断用户提交的flag是否正确  ok 并更改相应表格
     '''
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault()

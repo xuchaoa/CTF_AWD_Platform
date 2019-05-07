@@ -9,6 +9,7 @@ from .serializers import CtfCompetitionTableSerializer, CtfSubmitAddSerializer, 
 from rest_framework import mixins
 from .models import CtfCompetitionTable,CtfSubmit
 from rest_framework import permissions
+from django.db.models import Q
 
 
 class TeamCompetitionInfoViewSet(viewsets.ModelViewSet):
@@ -61,7 +62,9 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,mixins.C
     '''
     ctf提交记录
 
-    增加： Auth并且参加了该比赛，并且在比赛时间内
+    增加： Auth并且参加了该比赛  ok
+    并且在比赛时间内 TODO this
+    修改相应表格： CtfCompetitionTable        TeamCompetitionInfo
     删除： None
     修改： None
     查询： 只显示不敏感字段  --> ok
@@ -74,4 +77,12 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,mixins.C
         if self.action == 'create':
             return CtfSubmitAddSerializer
         return CtfSubmitDetailSerializer
+
+    def perform_create(self, serializer):
+        submit = serializer.save()
+        if submit.submit_result == True:
+            ctf_competition_table = CtfCompetitionTable.objects.get(Q(ctf=submit.ctf) & Q(competition=submit.competition))
+            ctf_competition_table.submit_times += 1
+            ctf_competition_table.save()
+        return submit
 
