@@ -10,7 +10,7 @@ from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticated
 
 
-class TeamCompetitionInfoViewSet(viewsets.ModelViewSet,mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+class TeamCompetitionInfoViewSet(viewsets.ModelViewSet):
     '''
     团队比赛总得分ViewSet
     增加：所有团队成员参赛可添加得分记录
@@ -24,7 +24,7 @@ class TeamCompetitionInfoViewSet(viewsets.ModelViewSet,mixins.ListModelMixin,mix
     permission_classes = (IsAuthenticated,)
 
 
-class UserCompetitionInfoViewSet(viewsets.ModelViewSet,mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+class UserCompetitionInfoViewSet(viewsets.ModelViewSet):
     '''
     团队比赛个人得分表ViewSet
     增加：所有人参加比赛可增加得分记录
@@ -38,7 +38,7 @@ class UserCompetitionInfoViewSet(viewsets.ModelViewSet,mixins.ListModelMixin,mix
     permission_classes = (IsAuthenticated,)
 
 
-class IllegalityViewSet(viewsets.ModelViewSet,mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+class IllegalityViewSet(viewsets.ModelViewSet):
     '''
     团队比赛违规表ViewSet
     增加：违规则增加记录
