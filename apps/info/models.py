@@ -14,35 +14,41 @@ class TeamCompetitionInfo(models.Model):
     '''
     队伍比赛团队得分表
     '''
-    team = models.ForeignKey(TeamProfile,on_delete=models.CASCADE,verbose_name='队伍')
-    competition = models.ForeignKey(CompetitionProfile,on_delete=models.CASCADE,verbose_name='比赛')
+    team = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name='队伍')
+    competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛')
     score_all = models.IntegerField(default=0, verbose_name="队伍总得分")
     score_choice = models.IntegerField(default=0, verbose_name="选择题得分")
     score_ctf = models.IntegerField(default=0, verbose_name="ctf分数")
     score_awd = models.IntegerField(default=0, verbose_name="awd分数")
 
     class Meta:
-        verbose_name = '比赛情况'
+        verbose_name = '团队比赛详情'
         verbose_name_plural = verbose_name
-        unique_together = ('team','competition')  #多个字段作为一个联合唯一索引
+        unique_together = ('team', 'competition')  # 多个字段作为一个联合唯一索引
+
+    def __str__(self):
+        return str(self.id)
 
 
 class UserCompetitionInfo(models.Model):
     '''
     团队比赛个人得分表
     '''
-    user = models.ForeignKey(UserProfile,on_delete=models.CASCADE,verbose_name='队员')
-    team = models.ForeignKey(TeamProfile,on_delete=models.CASCADE,verbose_name='队伍')
-    competition = models.ForeignKey(CompetitionProfile,on_delete=models.CASCADE,verbose_name='比赛')
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='队员')
+    team = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name='队伍')
+    competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛')
     score_all = models.IntegerField(default=0, verbose_name="个人总分")
     score_choice = models.IntegerField(default=0, verbose_name="选择题分数")
     score_ctf = models.IntegerField(default=0, verbose_name="ctf总分")
     score_awd = models.IntegerField(default=0, verbose_name="awd总分")
 
     class Meta:
-        verbose_name = '比赛情况'
+        verbose_name = '个人比赛详情'
         verbose_name_plural = verbose_name
-        unique_together = ('user','team', 'competition')
+        unique_together = ('user', 'team', 'competition')
+
+    def __str__(self):
+        return str(self.id)
 
 
 class Illegality(models.Model):
@@ -57,8 +63,8 @@ class Illegality(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='队员')
     team = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name='队伍')
     competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛')
-    illegality_time = models.DateTimeField(default=timezone.now,verbose_name='')
-    illegality_action = models.SmallIntegerField(choices=illegality_type,default=2, verbose_name="行为")
+    illegality_time = models.DateTimeField(default=timezone.now, verbose_name='')
+    illegality_action = models.SmallIntegerField(choices=illegality_type, default=2, verbose_name="行为")
     illegality_timea = models.IntegerField(verbose_name='违规次数')
     illegality_duration = models.IntegerField(verbose_name='封禁时间')
     illegality_starttime = models.DateTimeField(verbose_name='封禁开始时间')
@@ -70,19 +76,22 @@ class Illegality(models.Model):
         verbose_name_plural = verbose_name
         unique_together = ('user', 'team', 'competition')
 
+    def __str__(self):
+        return str(self.id)
+
 
 class CtfCompetitionTable(models.Model):
     '''
-    每场比赛的CTF题目
+    每场比赛的CTF题目,包括提交次数字段
     '''
-    ctf = models.ForeignKey(CtfLibrary,on_delete=models.CASCADE,verbose_name='题目编号')
-    competition = models.ForeignKey(CompetitionProfile,on_delete=models.CASCADE,verbose_name='比赛编号')
+    ctf = models.ForeignKey(CtfLibrary, on_delete=models.CASCADE, verbose_name='题目编号')
+    competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛编号')
     submit_times = models.IntegerField(default=0, verbose_name='正确提交次数')
 
     class Meta:
-        verbose_name = '比赛CTF题目'
+        verbose_name = '比赛题目'
         verbose_name_plural = verbose_name
-        unique_together = ('ctf','competition')
+        unique_together = ('ctf', 'competition')
 
 
 class CtfSubmit(models.Model):
@@ -108,9 +117,11 @@ class AwdSubmit(models.Model):
     AWD攻防提交flag表
     '''
     team = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name='队伍')
-    competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛', related_name="competition_id")
+    competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛',
+                                    related_name="competition_id")
     awd_submit_time = models.DateTimeField(default=timezone.now, verbose_name="提交时间")
-    awd_submit_teamid = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name="目标队伍编号", related_name="team_id")
+    awd_submit_teamid = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name="目标队伍编号",
+                                          related_name="team_id")
     awd_submit_flag = models.CharField(max_length=255, verbose_name="提交flag")
     awd_submit_result = models.BooleanField(verbose_name="判定结果")
 

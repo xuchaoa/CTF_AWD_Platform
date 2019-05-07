@@ -22,4 +22,4 @@ class competition_display(object):
     '''被隐藏的字段(与只读矛盾)'''
     exclude = []
 
-xadmin.site.register(models.CompetitionProfile,competition_display)
+xadmin.site.register(models.CompetitionProfile, competition_display)

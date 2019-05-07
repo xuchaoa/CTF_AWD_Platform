@@ -13,7 +13,6 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path,re_path
 import xadmin
 from django.conf import settings
@@ -24,13 +23,30 @@ from rest_framework.documentation import include_docs_urls
 
 
 #rest
-from django.conf.urls import url, include
+from django.conf.urls import include
 from rest_framework import routers
-from users import views  #直接引用，虽然Pycharm报错
+from users.views import UserViewset,SmsCodeViewset,UserLogViewSet
+from teams.views import TeamViewSet
+from competition.views import CompetitionViewSet
+from ctf.views import CtfViewSet
+from notice.views import NoticeViewSet
+from info.views import TeamCompetitionInfoViewSet, UserCompetitionInfoViewSet, IllegalityViewSet
+
 #
 router = routers.DefaultRouter() #路由
-router.register('users',views.UserViewset,base_name='users')
-router.register('codes',views.SmsCodeViewset,base_name='codes')
+router.register('users',UserViewset,base_name='users')
+router.register('codes',SmsCodeViewset,base_name='codes')
+router.register('teams',TeamViewSet,base_name='teams')
+router.register('competitions',CompetitionViewSet,base_name='competitions')
+router.register('logs',UserLogViewSet,base_name='logs')
+router.register('ctfs',CtfViewSet,base_name='ctfs')
+router.register('notices',NoticeViewSet, base_name='notices')
+router.register('teamCompetitionInfos', TeamCompetitionInfoViewSet, base_name='teamCompetitionInfos')
+router.register('userCompetitionInfos', UserCompetitionInfoViewSet, base_name='userCompetitionInfos')
+router.register('illegalityInfos', IllegalityViewSet, base_name='illegalityInfos')
+
+
+
 # router.register('test',views.PermissionTestViewSet,base_name='test')
 
 
@@ -41,7 +57,7 @@ from rest_framework_jwt.views import obtain_jwt_token,refresh_jwt_token,verify_j
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
-    path('x_admin/',xadmin.site.urls),
+    path('x_admin/', xadmin.site.urls),
     # path('',include('apps.x_user.urls')),
     #rest
     re_path(r'^api/', include(router.urls)), #包含进路由配置的url
