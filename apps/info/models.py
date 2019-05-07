@@ -114,6 +114,7 @@ class CtfSubmit(models.Model):
 
 
 
+
 class AwdSubmit(models.Model):
     '''
     AWD攻防提交flag表

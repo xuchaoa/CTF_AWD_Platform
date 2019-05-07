@@ -44,7 +44,7 @@ class CurrentCompetitionDefault(serializers.CurrentUserDefault):
     '''
     def set_context(self, serializer_field):
         self.user = serializer_field.context['request'].user
-        team = TeamProfile.objects.get(team_captain=self.user)
+        team = TeamProfile.objects.get(Q(team_captain=self.user) | Q(team_member1=self.user) | Q(team_member2=self.user) | Q(team_member3=self.user))
         self.competition = team.competition
 
 
