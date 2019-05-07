@@ -31,7 +31,7 @@ from competition.views import CompetitionViewSet
 from ctf.views import CtfViewSet
 
 from notice.views import NoticeViewSet
-from info.views import TeamCompetitionInfoViewSet, UserCompetitionInfoViewSet, IllegalityViewSet
+from info.views import TeamCompetitionInfoViewSet, UserCompetitionInfoViewSet, IllegalityViewSet,CtfCompetitionTableViewSet,CtfSubmitViewSet
 
 
 #
