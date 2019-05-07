@@ -105,7 +105,7 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.
     删除： None
     修改： None
     查询： 只显示不敏感字段  --> ok
-    TODO 提交flag后不返回前端
+    提交flag后不返回前端  -->  ok
     '''
     queryset = CtfSubmit.objects.all()
     permission_classes = (IsAuthenticated,)
