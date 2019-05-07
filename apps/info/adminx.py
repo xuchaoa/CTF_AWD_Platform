@@ -1,12 +1,15 @@
 import xadmin
+
 from . import models
-from .models import CtfCompetitionTable, UserCompetitionInfo, TeamCompetitionInfo, Illegality
+from .models import CtfCompetitionTable, UserCompetitionInfo, TeamCompetitionInfo, Illegality,CtfSubmit
+
 
 class CtfCompetitionTableDisplay(object):
-    list_display = ('id','submit_times','competition','ctf')
+    list_display = ('id','ctf','submit_times','competition')
 
 
 xadmin.site.register(CtfCompetitionTable,CtfCompetitionTableDisplay)
+
 
 
 class TeamCompetitionInfoDisplay(object):
@@ -50,3 +53,9 @@ class IllegalityDisplay(object):
 
 
 xadmin.site.register(models.Illegality, IllegalityDisplay)
+
+class CtfSubmitDisplay(object):
+    list_display = ('id', 'user','competition','submit_time','ctf','submit_flag','submit_result')
+
+xadmin.site.register(CtfSubmit,CtfSubmitDisplay)
+

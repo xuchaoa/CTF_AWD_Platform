@@ -28,7 +28,7 @@ xadmin.site.register(views.BaseAdminView, BaseSetting)
 
 class UserDisplay(UserAdmin):
     change_user_password_template = None
-    list_display = ('user_phone','username', 'user_major', 'user_number',  'is_staff')
+    list_display = ('id','user_phone','username', 'user_major', 'user_number',  'is_staff')
     list_filter = ('is_staff', 'is_superuser', 'is_active')
     search_fields = ('username', 'first_name', 'last_name', 'email')
     ordering = ('username',)

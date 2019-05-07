@@ -26,3 +26,5 @@ class CtfLibrary(models.Model):
     class Meta:
         verbose_name = '题库'
         verbose_name_plural = verbose_name
+    def __str__(self):
+        return self.ctf_title
