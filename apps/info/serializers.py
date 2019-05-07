@@ -5,6 +5,7 @@ from teams.models import TeamProfile
 from info.models import CtfSubmit,CtfCompetitionTable
 from ctf.models import CtfLibrary
 from django.forms.models import model_to_dict
+from django.db.models import Q
 
 
 class CtfCompetitionTableSerializer(serializers.ModelSerializer):
@@ -40,9 +41,9 @@ class CurrentCompetitionDefault(serializers.CurrentUserDefault):
 class CtfSubmitAddSerializer(serializers.ModelSerializer):
     '''
     1.需要判断用户时都参加该比赛(不进行判断，后端自动填充)  ok
-
     2.是否在比赛时间内 TODO this
-    3.判断用户提交的flag是否正确  ok 并更改相应表格
+    3.判断用户提交的flag是否正确  ok 并更改相应表格 ok
+    4.已经提交过正确答案则不允许再次提交  ok
     '''
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
@@ -70,6 +71,8 @@ class CtfSubmitAddSerializer(serializers.ModelSerializer):
     #             print('yes')
 
     def validate(self, attrs):
+        if CtfSubmit.objects.filter(Q(user=attrs['user']) & Q(ctf=attrs['ctf']) & Q(submit_result=True)).exists():
+            raise serializers.ValidationError('已提交过正确的flag')
         flag = attrs['ctf'].ctf_flag
         if flag == attrs['submit_flag']:
             attrs['submit_result'] = True

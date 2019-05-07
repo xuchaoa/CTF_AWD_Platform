@@ -7,9 +7,10 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.authentication import SessionAuthentication
 from .serializers import CtfCompetitionTableSerializer, CtfSubmitAddSerializer, CtfSubmitDetailSerializer
 from rest_framework import mixins
-from .models import CtfCompetitionTable,CtfSubmit
+from .models import CtfCompetitionTable, CtfSubmit, TeamCompetitionInfo
 from rest_framework import permissions
 from django.db.models import Q
+from teams.models import TeamProfile
 
 
 class TeamCompetitionInfoViewSet(viewsets.ModelViewSet):
@@ -58,13 +59,14 @@ class CtfSubmitPermission(permissions.BasePermission):
         return False
 
 
-class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,mixins.CreateModelMixin, viewsets.GenericViewSet):
+class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin,
+                       viewsets.GenericViewSet):
     '''
     ctf提交记录
 
     增加： Auth并且参加了该比赛  ok
     并且在比赛时间内 TODO this
-    修改相应表格： CtfCompetitionTable        TeamCompetitionInfo
+    修改相应表格： CtfCompetitionTable  ok   TeamCompetitionInfo
     删除： None
     修改： None
     查询： 只显示不敏感字段  --> ok
@@ -72,6 +74,7 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,mixins.C
     queryset = CtfSubmit.objects.all()
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
+
     # serializer_class = CtfSubmitSerializer
     def get_serializer_class(self):
         if self.action == 'create':
@@ -80,9 +83,17 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,mixins.C
 
     def perform_create(self, serializer):
         submit = serializer.save()
+
         if submit.submit_result == True:
-            ctf_competition_table = CtfCompetitionTable.objects.get(Q(ctf=submit.ctf) & Q(competition=submit.competition))
+            team = TeamProfile.objects.get(
+                Q(team_captain=submit.user) | Q(team_member1=submit.user) | Q(team_member2=submit.user)
+                | Q(team_member3=submit.user))
+            ctf_competition_table = CtfCompetitionTable.objects.get(
+                Q(ctf=submit.ctf) & Q(competition=submit.competition))
             ctf_competition_table.submit_times += 1
             ctf_competition_table.save()
+            team_competition_info = TeamCompetitionInfo.objects.get(Q(competition=submit.competition) & Q(team=team))
+            team_competition_info.score_all += submit.ctf.ctf_score
+            team_competition_info.score_ctf += submit.ctf.ctf_score
+            team_competition_info.save()
         return submit
-
