@@ -3,8 +3,10 @@ from django.shortcuts import render
 # Create your views here.
 from rest_framework import viewsets
 
-from .serializers import IllegalitySerializer, UserCompetitionInfoSerializer, TeamCompetitionInfoSerializer,CtfCompetitionTableSerializer, CtfSubmitAddSerializer, CtfSubmitDetailSerializer
-from .models import TeamCompetitionInfo, UserCompetitionInfo, Illegality,CtfCompetitionTable, CtfSubmit, TeamCompetitionInfo
+from .serializers import IllegalitySerializer, UserCompetitionInfoSerializer, TeamCompetitionInfoSerializer, \
+    CtfCompetitionTableSerializer, CtfSubmitAddSerializer, CtfSubmitDetailSerializer
+from .models import TeamCompetitionInfo, UserCompetitionInfo, Illegality, CtfCompetitionTable, CtfSubmit, \
+    TeamCompetitionInfo
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework import mixins
@@ -14,14 +16,14 @@ from django.db.models import Q
 from teams.models import TeamProfile
 
 
-
-class TeamCompetitionInfoViewSet(viewsets.ModelViewSet):
+class TeamCompetitionInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     '''
     团队比赛总得分ViewSet
-    增加：所有团队成员参赛可添加得分记录
+    增加：不开放api
     删除：不开放api
     更改：不开放api
     查询：任何人都可查看总得分
+    权限控制：不能跨比赛访问 TODO this
     '''
     queryset = TeamCompetitionInfo.objects.all()
     serializer_class = TeamCompetitionInfoSerializer
@@ -29,10 +31,10 @@ class TeamCompetitionInfoViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
 
-class UserCompetitionInfoViewSet(viewsets.ModelViewSet):
+class UserCompetitionInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     '''
     团队比赛个人得分表ViewSet
-    增加：所有人参加比赛可增加得分记录
+    增加：不开放api
     删除：不开放api
     修改：不开放api
     查询：所有人可查看得分记录
@@ -43,10 +45,10 @@ class UserCompetitionInfoViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
 
-class IllegalityViewSet(viewsets.ModelViewSet):
+class IllegalityViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     '''
     团队比赛违规表ViewSet
-    增加：违规则增加记录
+    增加：不开放api
     删除：不开放api
     修改：不开放api
     查询：所有人可查询违规记录
@@ -57,8 +59,6 @@ class IllegalityViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
 
-
-
 class CtfCompetitionTableViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     '''
     每场比赛ctf题目
@@ -67,6 +67,7 @@ class CtfCompetitionTableViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixi
     删除： None
     修改： None
     查看： 任何人（Auth）都可查看
+    权限控制： TODO 只有该比赛用户可以查看
     '''
     queryset = CtfCompetitionTable.objects.all()
     permission_classes = (IsAuthenticated,)
@@ -100,10 +101,11 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.
 
     增加： Auth并且参加了该比赛  ok
     并且在比赛时间内 TODO this
-    修改相应表格： CtfCompetitionTable  ok   TeamCompetitionInfo
+    修改相应表格： CtfCompetitionTable  ok   TeamCompetitionInfo  ok
     删除： None
     修改： None
     查询： 只显示不敏感字段  --> ok
+    提交flag后不返回前端  -->  ok
     '''
     queryset = CtfSubmit.objects.all()
     permission_classes = (IsAuthenticated,)
@@ -131,4 +133,3 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.
             team_competition_info.score_ctf += submit.ctf.ctf_score
             team_competition_info.save()
         return submit
-

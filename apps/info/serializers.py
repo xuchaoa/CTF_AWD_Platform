@@ -44,7 +44,7 @@ class CurrentCompetitionDefault(serializers.CurrentUserDefault):
     '''
     def set_context(self, serializer_field):
         self.user = serializer_field.context['request'].user
-        team = TeamProfile.objects.get(team_captain=self.user)
+        team = TeamProfile.objects.get(Q(team_captain=self.user) | Q(team_member1=self.user) | Q(team_member2=self.user) | Q(team_member3=self.user))
         self.competition = team.competition
 
 
@@ -76,7 +76,7 @@ class CtfSubmitAddSerializer(serializers.ModelSerializer):
                                         error_messages={
                                             'blank':'提交的flag为空',  #先验证这里，才会进入validate
                                             'required':'未提交任何flag'
-                                        })
+                                        },write_only=True)
     submit_time = serializers.DateTimeField(read_only=True,format='%Y-%m-%d %H:%M:%S')
     submit_result = serializers.BooleanField(default=False,read_only=True)
 

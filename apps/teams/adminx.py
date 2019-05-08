@@ -7,6 +7,6 @@ from .models import TeamProfile
 import xadmin
 
 class TeamDispaly(object):
-    list_display = ('id','team_name')
+    list_display = ('id','team_name','team_captain','team_member1','team_member2','team_member3','competition')
 
 xadmin.site.register(TeamProfile, TeamDispaly)
