@@ -84,18 +84,7 @@ class CtfSubmitAddSerializer(serializers.ModelSerializer):
     submit_time = serializers.DateTimeField(read_only=True,format='%Y-%m-%d %H:%M:%S')
     submit_result = serializers.BooleanField(default=False,read_only=True)
 
-    # def create(self, validated_data):
-    #     print(validated_data)
-    #     user = self.context['request'].user
-    #
 
-
-    # def validate_submit_flag(self, submit_flag):
-    #     if self.validated_data.is_valid():
-    #         flag = CtfLibrary.objects.get(id=self.validated_data['ctf'])
-    #         print(flag)
-    #         if flag == submit_flag:
-    #             print('yes')
 
     def validate(self, attrs):
         if CtfSubmit.objects.filter(Q(user=attrs['user']) & Q(ctf=attrs['ctf']) & Q(submit_result=True)).exists():
