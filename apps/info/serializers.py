@@ -6,7 +6,8 @@ from info.models import CtfSubmit,CtfCompetitionTable
 from ctf.models import CtfLibrary
 from django.forms.models import model_to_dict
 from django.db.models import Q
-from .models import Illegality, UserCompetitionInfo, TeamCompetitionInfo
+from .models import Illegality, UserCompetitionInfo, TeamCompetitionInfo,CompetitionChoice
+from choice.serializers import ChoiceSerializer
 
 
 class TeamCompetitionInfoSerializer(serializers.ModelSerializer):
@@ -119,4 +120,10 @@ class CtfSubmitDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = CtfSubmit
         fields = ('id','user','competition','ctf','submit_time','submit_result')
+
+class CompetitionChoiceSerializer(serializers.ModelSerializer):
+    choice = ChoiceSerializer()
+    class Meta:
+        model = CompetitionChoice
+        fields = '__all__'
 

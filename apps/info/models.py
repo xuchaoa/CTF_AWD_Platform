@@ -89,7 +89,7 @@ class CtfCompetitionTable(models.Model):
     submit_times = models.IntegerField(default=0, verbose_name='正确提交次数')
 
     class Meta:
-        verbose_name = '比赛题目'
+        verbose_name = '比赛CTF题目'
         verbose_name_plural = verbose_name
         unique_together = ('ctf', 'competition')
     def __str__(self):
@@ -138,17 +138,17 @@ class CompetitionChoice(models.Model):
     '''
     选择题抽取题目
     '''
-    competition_choice_id = models.ForeignKey(ChoiceLibrary, on_delete=models.CASCADE, verbose_name="选择题ID",
-                                              related_name="choice_1")
-    competition_id = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, related_name="competition_1")
+    competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, related_name="competition_choice",default=None)
+    choice = models.ForeignKey(ChoiceLibrary, on_delete=models.CASCADE, verbose_name="选择题ID",
+                               related_name="choice_choice",default=None)
 
     class Meta:
-        verbose_name = '选择题抽取题目'
+        verbose_name = '比赛选择题题目'
         verbose_name_plural = verbose_name
-        unique_together = ('competition_choice_id', 'competition_id')
+        unique_together = ('competition', 'choice')
 
 
-class ChoiceResult(models.Model):
+class ChoiceSubmit(models.Model):
     '''
     选择题选项
     '''
@@ -158,10 +158,10 @@ class ChoiceResult(models.Model):
         (2, 'C'),
         (3, 'D')
     )
-    choice_result_id = models.ForeignKey(CompetitionChoice, on_delete=models.CASCADE, verbose_name="选择题ID",
-                                         related_name="competition_choice_idd")
-    choice_result_result = models.SmallIntegerField(choices=result_choice, verbose_name="选择答案")
+    choice = models.ForeignKey(CompetitionChoice, on_delete=models.CASCADE, verbose_name="选择题ID",
+                                         related_name="competition_choice_id")
+    result = models.SmallIntegerField(choices=result_choice, verbose_name="选择答案")
 
     class Meta:
-        verbose_name = '选择题选项'
+        verbose_name = '选择题提交记录'
         verbose_name_plural = verbose_name

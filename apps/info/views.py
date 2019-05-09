@@ -4,9 +4,9 @@ from django.shortcuts import render
 from rest_framework import viewsets
 
 from .serializers import IllegalitySerializer, UserCompetitionInfoSerializer, TeamCompetitionInfoSerializer, \
-    CtfCompetitionTableSerializer, CtfSubmitAddSerializer, CtfSubmitDetailSerializer
+    CtfCompetitionTableSerializer, CtfSubmitAddSerializer, CtfSubmitDetailSerializer,CompetitionChoiceSerializer
 from .models import TeamCompetitionInfo, UserCompetitionInfo, Illegality, CtfCompetitionTable, CtfSubmit, \
-    TeamCompetitionInfo
+    TeamCompetitionInfo, CompetitionChoice
 from rest_framework.authentication import SessionAuthentication
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework import mixins
@@ -59,7 +59,6 @@ class IllegalityViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewse
     permission_classes = (IsAuthenticated,)
 
 
-
 class CtfSubmitPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         if bool(request.user and request.user.is_authenticated):
@@ -76,7 +75,6 @@ class CtfSubmitPermission(permissions.BasePermission):
         :return:
         '''
         return False
-
 
 
 class CtfCompetitionTableViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -96,14 +94,12 @@ class CtfCompetitionTableViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixi
 
     def get_queryset(self):
         team = TeamProfile.objects.filter(
-            Q(team_captain=self.request.user) | Q(team_member1=self.request.user) | Q(team_member2=self.request.user) | Q(
+            Q(team_captain=self.request.user) | Q(team_member1=self.request.user) | Q(
+                team_member2=self.request.user) | Q(
                 team_member3=self.request.user))
         team = team[0]
         competition = team.competition
         return CtfCompetitionTable.objects.filter(competition=competition)
-
-
-
 
 
 class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin,
@@ -145,3 +141,17 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.
             team_competition_info.score_ctf += submit.ctf.ctf_score
             team_competition_info.save()
         return submit
+
+
+class CompetitionChoiceViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    '''
+    比赛选择题Viewset
+    增加：不开放API
+    删除：不开放API
+    修改：不开放API
+    查询：Auth 注意隐藏字段
+    '''
+    queryset = CompetitionChoice.objects.all()
+    permissions = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
+    serializer_class = CompetitionChoiceSerializer
