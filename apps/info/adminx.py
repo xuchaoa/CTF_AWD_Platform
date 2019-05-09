@@ -62,7 +62,7 @@ class CompetitionChoiceDisplay(object):
     readonly_fields = []
     exclude = []
 
-xadmin.site.register(models.CompetitionChoice,CompetitionChoiceDisplay)
+xadmin.site.register(models.CompetitionChoiceSubmit,CompetitionChoiceDisplay)
 
 
 class CtfSubmitDisplay(object):
@@ -71,4 +71,9 @@ class CtfSubmitDisplay(object):
     ordering = ['id']
 
 xadmin.site.register(CtfSubmit,CtfSubmitDisplay)
+
+class UserChoiceInfoDisplay(object):
+    list_display = ['id','user','team','submit_status','score']
+
+xadmin.site.register(models.UserChoiceInfo,UserChoiceInfoDisplay)
 

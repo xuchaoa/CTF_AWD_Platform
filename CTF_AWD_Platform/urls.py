@@ -30,7 +30,7 @@ from ctf.views import CtfViewSet
 
 from notice.views import NoticeViewSet
 from info.views import TeamCompetitionInfoViewSet, UserCompetitionInfoViewSet, IllegalityViewSet, \
-    CtfCompetitionTableViewSet, CtfSubmitViewSet,CompetitionChoiceViewSet
+    CtfCompetitionTableViewSet, CtfSubmitViewSet,CompetitionChoiceSubmitViewSet,UserChoiceInfoViewSet
 
 #
 router = routers.DefaultRouter()  # 路由
@@ -47,7 +47,8 @@ router.register('userCompetitionInfos', UserCompetitionInfoViewSet, base_name='u
 router.register('illegalityInfos', IllegalityViewSet, base_name='illegalityInfos')
 router.register('CtfCompetitionTables', CtfCompetitionTableViewSet, base_name='CtfCompetitionTables')
 router.register('CtfSubmits', CtfSubmitViewSet, base_name='CtfSubmits')
-router.register('CompetitionChoices', CompetitionChoiceViewSet, base_name='CompetitionChoices')
+router.register('CompetitionChoiceSubmits', CompetitionChoiceSubmitViewSet, base_name='UserChoiceInfos')
+router.register('UserChoiceInfos', UserChoiceInfoViewSet, base_name='CompetitionChoiceSubmits')
 
 # router.register('test',views.PermissionTestViewSet,base_name='test')
 
