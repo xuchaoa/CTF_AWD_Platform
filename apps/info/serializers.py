@@ -6,7 +6,8 @@ from info.models import CtfSubmit,CtfCompetitionTable
 from ctf.models import CtfLibrary
 from django.forms.models import model_to_dict
 from django.db.models import Q
-from .models import Illegality, UserCompetitionInfo, TeamCompetitionInfo
+from .models import Illegality, UserCompetitionInfo, TeamCompetitionInfo,CompetitionChoiceSubmit,UserChoiceInfo
+from choice.serializers import ChoiceSerializer
 
 
 class TeamCompetitionInfoSerializer(serializers.ModelSerializer):
@@ -51,13 +52,13 @@ class CurrentCompetitionDefault(serializers.CurrentUserDefault):
         self.competition = team.competition
 
 
-        self.ctf_id = serializer_field.context['request'].POST['ctf']
-        # team = TeamProfile.objects.filter()
-        self.ctf_competition = CtfCompetitionTable.objects.filter(ctf=self.ctf_id )
-        # self.ctf = model_to_dict(self.ctf)
-        # self.com = CtfCompetitionTable.objects.filter(ctf=self.ctf)
-        self.ctf = self.ctf_competition.model.ctf
-        self.com = self.ctf_competition.model.competition
+        # self.ctf_id = serializer_field.context['request'].POST['ctf']
+        # # team = TeamProfile.objects.filter()
+        # self.ctf_competition = CtfCompetitionTable.objects.filter(ctf=self.ctf_id )
+        # # self.ctf = model_to_dict(self.ctf)
+        # # self.com = CtfCompetitionTable.objects.filter(ctf=self.ctf)
+        # self.ctf = self.ctf_competition.model.ctf
+        # self.com = self.ctf_competition.model.competition
 
     def __call__(self):
         return self.competition
@@ -83,18 +84,7 @@ class CtfSubmitAddSerializer(serializers.ModelSerializer):
     submit_time = serializers.DateTimeField(read_only=True,format='%Y-%m-%d %H:%M:%S')
     submit_result = serializers.BooleanField(default=False,read_only=True)
 
-    # def create(self, validated_data):
-    #     print(validated_data)
-    #     user = self.context['request'].user
-    #
 
-
-    # def validate_submit_flag(self, submit_flag):
-    #     if self.validated_data.is_valid():
-    #         flag = CtfLibrary.objects.get(id=self.validated_data['ctf'])
-    #         print(flag)
-    #         if flag == submit_flag:
-    #             print('yes')
 
     def validate(self, attrs):
         if CtfSubmit.objects.filter(Q(user=attrs['user']) & Q(ctf=attrs['ctf']) & Q(submit_result=True)).exists():
@@ -120,3 +110,94 @@ class CtfSubmitDetailSerializer(serializers.ModelSerializer):
         model = CtfSubmit
         fields = ('id','user','competition','ctf','submit_time','submit_result')
 
+class CompetitionChoiceSerializer(serializers.ModelSerializer):
+    # is_start = serializers.IntegerField
+    choice = ChoiceSerializer()
+    class Meta:
+        model = CompetitionChoiceSubmit
+        fields = '__all__'
+
+
+class CurrentTeamDefault(serializers.CurrentUserDefault):
+    '''
+    决定了每个用户只能在一个队伍中
+    '''
+    def set_context(self, serializer_field):
+        self.user = serializer_field.context['request'].user
+        self.team = TeamProfile.objects.get(Q(team_captain=self.user) | Q(team_member1=self.user) | Q(team_member2=self.user) | Q(team_member3=self.user))
+
+
+    def __call__(self):
+        return self.team
+
+
+
+class UserChoiceInfoAddSerializer(serializers.ModelSerializer):
+    '''
+    生成题库时使用该serializer
+    '''
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+    team = serializers.HiddenField(
+        default=CurrentTeamDefault()
+    )
+    competition = serializers.HiddenField(
+        default=CurrentCompetitionDefault()
+    )
+
+    submit_status = serializers.NullBooleanField()
+    score = serializers.IntegerField(read_only=True)
+
+    def validate_submit_status(self,submit_status):
+        current_submit_status = UserChoiceInfo.objects.filter(user=self.context['request'].user)[0].submit_status
+        if current_submit_status == None:
+            pass
+        elif current_submit_status == 0:
+            raise serializers.ValidationError('已经获取题目')
+        if current_submit_status == 1:
+            raise serializers.ValidationError('已经提交过题目')
+
+
+    def validate(self, attrs):
+        attrs['submit_status'] = 0
+        return attrs
+
+    class Meta:
+        model = UserChoiceInfo
+        fields = "__all__"
+
+class UserChoiceInfoUpdateSerializer(serializers.ModelSerializer):
+    '''
+    提交选择题时使用
+    '''
+
+    submit_status = serializers.NullBooleanField()
+
+
+    def validate_submit_status(self, submit_status):
+        print(submit_status)
+        current_submit_status = UserChoiceInfo.objects.filter(user=self.context['request'].user)
+        current_submit_status = current_submit_status[0].submit_status
+        if current_submit_status == 0:
+            pass
+        elif current_submit_status == None:
+            raise serializers.ValidationError('未获取题目，不能提交')
+        if current_submit_status == 1:
+            raise serializers.ValidationError('已经提交题目，不必重复提交')
+    def validate(self, attrs):
+        attrs['submit_status'] = 1
+        return attrs
+
+    class Meta:
+        model = UserChoiceInfo
+        fields = ('submit_status',)
+
+
+class UserChoiceInfoDetailSerializer(serializers.ModelSerializer):
+    '''
+    获取详情时使用
+    '''
+    class Meta:
+        model = UserChoiceInfo
+        fields = "__all__"
