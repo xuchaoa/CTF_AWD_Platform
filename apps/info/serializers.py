@@ -33,9 +33,12 @@ class IllegalitySerializer(serializers.ModelSerializer):
 
 class CtfCompetitionTableSerializer(serializers.ModelSerializer):
     ctf = CtfSerializer()
+
     class Meta:
         model = CtfCompetitionTable
         fields = '__all__'
+
+
 
 
 class CurrentCompetitionDefault(serializers.CurrentUserDefault):
