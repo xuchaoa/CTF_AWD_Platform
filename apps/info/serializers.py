@@ -185,6 +185,7 @@ class UserChoiceInfoUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('未获取题目，不能提交')
         if current_submit_status == 1:
             raise serializers.ValidationError('已经提交题目，不必重复提交')
+        
     def validate(self, attrs):
         attrs['submit_status'] = 1
         return attrs
