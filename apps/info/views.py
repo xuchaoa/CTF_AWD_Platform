@@ -59,21 +59,6 @@ class IllegalityViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewse
     permission_classes = (IsAuthenticated,)
 
 
-class CtfCompetitionTableViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    '''
-    每场比赛ctf题目
-
-    增加： None
-    删除： None
-    修改： None
-    查看： 任何人（Auth）都可查看
-    权限控制： TODO 只有该比赛用户可以查看
-    '''
-    queryset = CtfCompetitionTable.objects.all()
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
-    serializer_class = CtfCompetitionTableSerializer
-
 
 class CtfSubmitPermission(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -90,8 +75,35 @@ class CtfSubmitPermission(permissions.BasePermission):
         :param obj:
         :return:
         '''
-        print(request)
         return False
+
+
+
+class CtfCompetitionTableViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    '''
+    每场比赛ctf题目
+
+    增加： None
+    删除： None
+    修改： None
+    查看： 任何人（Auth）都可查看
+    权限控制： 只有该比赛用户可以查看(只能查看该比赛题目)  -->  ok
+    '''
+    queryset = CtfCompetitionTable.objects.all()
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
+    serializer_class = CtfCompetitionTableSerializer
+
+    def get_queryset(self):
+        team = TeamProfile.objects.filter(
+            Q(team_captain=self.request.user) | Q(team_member1=self.request.user) | Q(team_member2=self.request.user) | Q(
+                team_member3=self.request.user))
+        team = team[0]
+        competition = team.competition
+        return CtfCompetitionTable.objects.filter(competition=competition)
+
+
+
 
 
 class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin,
