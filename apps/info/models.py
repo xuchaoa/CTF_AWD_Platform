@@ -154,8 +154,11 @@ class CompetitionChoiceSubmit(models.Model):
     submit_result = models.SmallIntegerField(choices=result_choice,null=True,blank=True,verbose_name='提交的答案')
     result = models.BooleanField(null=True,blank=True,verbose_name='答案是否正确')
 
+    def __str__(self):
+        return '{}.{}.{}'.format(self.competition,self.team,self.user)
+
     class Meta:
-        verbose_name = '比赛选择题题目'
+        verbose_name = '比赛选择题题目及提交状况'
         verbose_name_plural = verbose_name
         unique_together = ('competition', 'choice')
 
