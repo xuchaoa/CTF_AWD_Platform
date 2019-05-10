@@ -110,12 +110,20 @@ class CtfSubmitDetailSerializer(serializers.ModelSerializer):
         model = CtfSubmit
         fields = ('id','user','competition','ctf','submit_time','submit_result')
 
-class CompetitionChoiceSerializer(serializers.ModelSerializer):
+class CompetitionChoiceDetailSerializer(serializers.ModelSerializer):
     # is_start = serializers.IntegerField
     choice = ChoiceSerializer()
     class Meta:
         model = CompetitionChoiceSubmit
-        fields = '__all__'
+        fields = ('id','choice','score','submit_result','user')
+
+class CompetitionChoiceUpdateSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+    class Meta:
+        model = CompetitionChoiceSubmit
+        fields = ('id','submit_result','user')
 
 
 class CurrentTeamDefault(serializers.CurrentUserDefault):
