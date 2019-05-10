@@ -196,7 +196,7 @@ AUTHENTICATION_BACKENDS = (
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=3),   #有效期180分钟
     #定义与令牌一起发送的Authorization标头值前缀
-    'JWT_AUTH_HEADER_PREFIX': 'JWT',
+    'JWT_AUTH_HEADER_PREFIX': 'SDUT',
     'JWT_AUTH_COOKIE': None,
     'JWT_ALGORITHM': 'HS256',
     'JWT_ALLOW_REFRESH': True,   #允许刷新

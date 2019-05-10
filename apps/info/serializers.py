@@ -150,13 +150,13 @@ class UserChoiceInfoAddSerializer(serializers.ModelSerializer):
     score = serializers.IntegerField(read_only=True)
 
     def validate_submit_status(self,submit_status):
-        current_submit_status = UserChoiceInfo.objects.filter(user=self.context['request'].user)[0].submit_status
-        if current_submit_status == None:
+
+        if submit_status == 0:
             pass
-        elif current_submit_status == 0:
-            raise serializers.ValidationError('已经获取题目')
-        if current_submit_status == 1:
-            raise serializers.ValidationError('已经提交过题目')
+        elif submit_status == None:
+            raise serializers.ValidationError('不允许重置')
+        if submit_status == 1:
+            raise serializers.ValidationError('不允许提交')
 
 
     def validate(self, attrs):
@@ -171,9 +171,7 @@ class UserChoiceInfoUpdateSerializer(serializers.ModelSerializer):
     '''
     提交选择题时使用
     '''
-
     submit_status = serializers.NullBooleanField()
-
 
     def validate_submit_status(self, submit_status):
         print(submit_status)
@@ -185,7 +183,7 @@ class UserChoiceInfoUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('未获取题目，不能提交')
         if current_submit_status == 1:
             raise serializers.ValidationError('已经提交题目，不必重复提交')
-        
+
     def validate(self, attrs):
         attrs['submit_status'] = 1
         return attrs
