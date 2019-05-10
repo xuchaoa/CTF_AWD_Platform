@@ -19,6 +19,7 @@ class ChoiceLibrary(models.Model):
     choice_c = models.TextField(null=True, verbose_name="选项C")
     choice_d = models.TextField(null=True, verbose_name="选项D")
     choice_answer = models.SmallIntegerField(choices=answer_choice, verbose_name="正确答案")
+    choice_score = models.IntegerField(default=2)
 
     class Meta:
         verbose_name = '选择题题库'

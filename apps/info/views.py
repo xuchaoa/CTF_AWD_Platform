@@ -15,7 +15,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import permissions
 from django.db.models import Q
 from teams.models import TeamProfile
-
+import random
+from choice.models import ChoiceLibrary
 
 class TeamCompetitionInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     '''
@@ -181,7 +182,32 @@ class UserChoiceInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mi
 
     def perform_create(self, serializer):
         # TODO 生成题目操作
-        serializer.save()
+
+        UserChoiceIn = serializer.save()
+        print(UserChoiceIn)
+        competition = UserChoiceIn.competition
+        team = UserChoiceIn.team
+        user = UserChoiceIn.user
+        choice_library_num = ChoiceLibrary.objects.count()
+        choice_num = competition.competition_choicenum
+        choice_id = []
+        while(len(choice_id) < choice_num):
+            x = random.randint(1,choice_library_num)
+            if x not in choice_id:
+                choice_id.append(x)
+        choice = []
+        for i in choice_id:
+            choice.append(ChoiceLibrary.objects.get(id=i))
+        for i in choice:
+            _ = CompetitionChoiceSubmit()
+            _.competition = competition
+            _.team = team
+            _.user = user
+            _.choice = i
+            _.score = i.choice_score
+            _.true_result = i.choice_answer
+            _.save()
+
 
     def perform_update(self, serializer):
         #TODO 汇总分数
