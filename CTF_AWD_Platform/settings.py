@@ -211,14 +211,18 @@ JWT_AUTH = {
 # 手机号码正则表达式
 REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"
 
+
+#Cache缓存配置
 REST_FRAMEWORK_EXTENSIONS = {
-    'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60 * 15
+    'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60*5, #五分钟
+    'DEFAULT_USE_CACHE': 'default',  #缓存的存储方式，与配置文件中的CACHES的键对应。
 }
 
+# Redis作为Cache配置
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://10.6.65.231:6379/1",
+        "LOCATION": "redis://:SDUTctf@10.6.65.231:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }

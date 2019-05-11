@@ -18,6 +18,7 @@ from teams.models import TeamProfile
 import random
 from choice.models import ChoiceLibrary
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
+from rest_framework_extensions.cache.mixins import cache_response
 
 class TeamCompetitionInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     '''
