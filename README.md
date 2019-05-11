@@ -67,4 +67,6 @@ CORS实现：django-cors-headers
 1. 注册验证码逻辑验证 -ok
 2. 
 
+## 附加工具
+redis监控： http://www.treesoft.cn/dms.html
 

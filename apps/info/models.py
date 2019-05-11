@@ -77,7 +77,7 @@ class Illegality(models.Model):
         unique_together = ('user', 'team', 'competition')
 
     def __str__(self):
-        return str(self.id)
+        return self.user.username
 
 
 class CtfCompetitionTable(models.Model):

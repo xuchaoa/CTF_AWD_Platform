@@ -17,6 +17,7 @@ from django.db.models import Q
 from teams.models import TeamProfile
 import random
 from choice.models import ChoiceLibrary
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 
 class TeamCompetitionInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     '''
@@ -79,7 +80,7 @@ class CtfSubmitPermission(permissions.BasePermission):
         return False
 
 
-class CtfCompetitionTableViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class CtfCompetitionTableViewSet(CacheResponseMixin,mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     '''
     每场比赛ctf题目
 
