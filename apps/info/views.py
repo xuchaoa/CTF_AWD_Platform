@@ -20,6 +20,14 @@ from choice.models import ChoiceLibrary
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
 from rest_framework_extensions.cache.mixins import cache_response
 
+from rest_framework import throttling
+
+
+class Mythrottle(throttling.BaseThrottle):
+    def allow_request(self, request, view):
+        return random.randint(1, 10) != 1
+
+
 class TeamCompetitionInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     '''
     团队比赛总得分ViewSet
@@ -119,6 +127,7 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.
     查询： 只显示不敏感字段  --> ok
     提交flag后不返回前端  -->  ok
     '''
+    throttle_scope = 'CtfSubmit'
     queryset = CtfSubmit.objects.all()
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)

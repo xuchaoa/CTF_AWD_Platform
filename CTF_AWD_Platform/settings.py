@@ -181,6 +181,13 @@ REST_FRAMEWORK = {
         # 'rest_framework.authentication.SessionAuthentication',    #sessionid验证方式
         # 'rest_framework.authentication.BasicAuthentication',  #账号密码验证方式
     ),
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.ScopedRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'CtfSubmit': '12/min',
+        'uploads': '20/day'
+    }
 }
 
 
