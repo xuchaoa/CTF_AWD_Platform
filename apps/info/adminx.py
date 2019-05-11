@@ -55,14 +55,14 @@ class IllegalityDisplay(object):
 xadmin.site.register(models.Illegality, IllegalityDisplay)
 
 
-class CompetitionChoiceDisplay(object):
-    list_display = ['id','competition','choice']
+class CompetitionChoiceSubmitDisplay(object):
+    list_display = ['id','competition','team','user','score','choice','true_result','submit_result','result']
     list_per_page = 10
     ordering = ['id']
     readonly_fields = []
     exclude = []
 
-xadmin.site.register(models.CompetitionChoiceSubmit,CompetitionChoiceDisplay)
+xadmin.site.register(models.CompetitionChoiceSubmit,CompetitionChoiceSubmitDisplay)
 
 
 class CtfSubmitDisplay(object):

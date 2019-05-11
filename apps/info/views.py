@@ -4,8 +4,8 @@ from django.shortcuts import render
 from rest_framework import viewsets
 
 from .serializers import IllegalitySerializer, UserCompetitionInfoSerializer, TeamCompetitionInfoSerializer, \
-    CtfCompetitionTableSerializer, CtfSubmitAddSerializer, CtfSubmitDetailSerializer, CompetitionChoiceSerializer, \
-    UserChoiceInfoAddSerializer,UserChoiceInfoUpdateSerializer,UserChoiceInfoDetailSerializer
+    CtfCompetitionTableSerializer, CtfSubmitAddSerializer, CtfSubmitDetailSerializer, CompetitionChoiceDetailSerializer, \
+    UserChoiceInfoAddSerializer,UserChoiceInfoUpdateSerializer,UserChoiceInfoDetailSerializer,CompetitionChoiceUpdateSerializer
 from .models import TeamCompetitionInfo, UserCompetitionInfo, Illegality, CtfCompetitionTable, CtfSubmit, \
     TeamCompetitionInfo, CompetitionChoiceSubmit, UserChoiceInfo
 from rest_framework.authentication import SessionAuthentication
@@ -145,18 +145,27 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.
         return submit
 
 
-class CompetitionChoiceSubmitViewSet(mixins.ListModelMixin,  mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class CompetitionChoiceSubmitViewSet(mixins.ListModelMixin,  mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     '''
     比赛选择题Viewset
-    增加：不开放API
+    增加：不开放API，自动生成
     删除：不开放API
-    修改：不开放API
-    查询：Auth 注意隐藏字段
+    修改：注意敏感字段不允许修改
+    查询：Auth 注意隐藏字段,只返回当前用户的选择题
     '''
     queryset = CompetitionChoiceSubmit.objects.all()
     permissions = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
-    serializer_class = CompetitionChoiceSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            return CompetitionChoiceDetailSerializer
+        if self.action == 'update':
+            return CompetitionChoiceUpdateSerializer
+        return CompetitionChoiceDetailSerializer
+
+    def get_queryset(self):
+        return CompetitionChoiceSubmit.objects.filter(user=self.request.user)
 
 
 class UserChoiceInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin,mixins.UpdateModelMixin , viewsets.GenericViewSet):
@@ -181,10 +190,9 @@ class UserChoiceInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mi
         return UserChoiceInfoDetailSerializer
 
     def perform_create(self, serializer):
-        # TODO 生成题目操作
+        # 生成题目操作  ok
 
         UserChoiceIn = serializer.save()
-        print(UserChoiceIn)
         competition = UserChoiceIn.competition
         team = UserChoiceIn.team
         user = UserChoiceIn.user
@@ -210,8 +218,22 @@ class UserChoiceInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mi
 
 
     def perform_update(self, serializer):
-        #TODO 汇总分数
-        serializer.save()
+        # 判断题目并汇总分数   --  ok
+        UserChoiceIn = serializer.instance
+        competition = UserChoiceIn.competition
+        team = UserChoiceIn.team
+        user = UserChoiceIn.user
+        choice_submit_queryset = CompetitionChoiceSubmit.objects.filter(competition=competition,team=team,user=user)
+        score = 0
+        for _ in choice_submit_queryset:
+            if _.true_result == _.submit_result:
+                _.result = True
+                score += _.score
+            else:
+                _.result = False
+            _.save()
+        UserChoiceIn.score = score
 
+        return serializer.save()
     # def get_object(self):
     #     return self.request.user

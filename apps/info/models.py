@@ -154,18 +154,21 @@ class CompetitionChoiceSubmit(models.Model):
     submit_result = models.SmallIntegerField(choices=result_choice,null=True,blank=True,verbose_name='提交的答案')
     result = models.BooleanField(null=True,blank=True,verbose_name='答案是否正确')
 
+    def __str__(self):
+        return '{}.{}.{}'.format(self.competition,self.team,self.user)
+
     class Meta:
-        verbose_name = '比赛选择题题目'
+        verbose_name = '比赛选择题题目及提交状况'
         verbose_name_plural = verbose_name
-        unique_together = ('competition', 'choice')
+        unique_together = ('competition','team','user', 'choice')
 
 
 class UserChoiceInfo(models.Model):
     '''
     用户选择题情况表
     '''
-    user = models.ForeignKey(UserProfile,on_delete=models.CASCADE,related_name='user_choice',default=None)
-    team = models.ForeignKey(TeamProfile,on_delete=models.CASCADE,related_name='team_choice',default=None)
+    user = models.ForeignKey(UserProfile,on_delete=models.CASCADE,related_name='user_choice_1',default=None)
+    team = models.ForeignKey(TeamProfile,on_delete=models.CASCADE,related_name='team_choice_1',default=None)
     competition = models.ForeignKey(CompetitionProfile,on_delete=models.CASCADE,related_name='competition_choice_info',default=None)
     submit_status = models.NullBooleanField(default=None)  #默认为NULL
     score = models.IntegerField(default=0)
