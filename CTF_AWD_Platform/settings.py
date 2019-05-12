@@ -235,3 +235,13 @@ CACHES = {
         }
     }
 }
+
+# 配置sentry
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+sentry_sdk.init(
+    dsn="https://7c8deea890d846549ecf814e8eb88292@sentry.io/1457559",
+    integrations=[DjangoIntegration()]
+)
+

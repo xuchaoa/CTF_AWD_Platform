@@ -1,0 +1,2 @@
+import sentry_sdk
+sentry_sdk.init('0f8eeee0745b11e99f0f0242ac120006')

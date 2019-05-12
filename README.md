@@ -70,3 +70,5 @@ CORS实现：django-cors-headers
 ## 附加工具
 redis监控： http://www.treesoft.cn/dms.html
 
+sentry: https://github.com/getsentry/sentry
+
