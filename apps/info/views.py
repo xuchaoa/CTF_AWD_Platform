@@ -17,6 +17,17 @@ from django.db.models import Q
 from teams.models import TeamProfile
 import random
 from choice.models import ChoiceLibrary
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
+from rest_framework_extensions.cache.mixins import cache_response
+from .serializers import UserCompetitionInfoUpdateSerializer
+
+from rest_framework import throttling
+
+
+class Mythrottle(throttling.BaseThrottle):
+    def allow_request(self, request, view):
+        return random.randint(1, 10) != 1
+
 
 class TeamCompetitionInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     '''
@@ -33,7 +44,7 @@ class TeamCompetitionInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixi
     permission_classes = (IsAuthenticated,)
 
 
-class UserCompetitionInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class UserCompetitionInfoViewSet(mixins.UpdateModelMixin,mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     '''
     团队比赛个人得分表ViewSet
     增加：不开放api
@@ -42,9 +53,14 @@ class UserCompetitionInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixi
     查询：所有人可查看得分记录
     '''
     queryset = UserCompetitionInfo.objects.all()
-    serializer_class = UserCompetitionInfoSerializer
+    # serializer_class = UserCompetitionInfoSerializer
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated,)
+
+    def get_serializer_class(self):
+        if self.action == 'update':
+            return UserCompetitionInfoUpdateSerializer
+        return UserCompetitionInfoSerializer
 
 
 class IllegalityViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -79,7 +95,7 @@ class CtfSubmitPermission(permissions.BasePermission):
         return False
 
 
-class CtfCompetitionTableViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class CtfCompetitionTableViewSet(CacheResponseMixin,mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     '''
     每场比赛ctf题目
 
@@ -117,6 +133,7 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.
     查询： 只显示不敏感字段  --> ok
     提交flag后不返回前端  -->  ok
     '''
+    throttle_scope = 'CtfSubmit'
     queryset = CtfSubmit.objects.all()
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)

@@ -171,12 +171,18 @@ class SmsCodeViewset(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
 class UserLogViewSet(viewsets.ModelViewSet):
     '''
-
+    增加： TODO this
+    删除：不开放api
+    修改：不开放api
+    查询：只能查询当前用户
     '''
     queryset = UserLoginLog.objects.all()
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
     serializer_class = LogSerializer
+
+    def get_queryset(self):
+        return UserLoginLog.objects.filter(user=self.request.user)
 
 # 下面是测试代码
 #

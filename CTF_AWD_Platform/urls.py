@@ -26,8 +26,6 @@ from rest_framework import routers
 from users.views import UserViewset, SmsCodeViewset, UserLogViewSet
 from teams.views import TeamViewSet
 from competition.views import CompetitionViewSet
-from ctf.views import CtfViewSet
-
 from notice.views import NoticeViewSet
 from info.views import TeamCompetitionInfoViewSet, UserCompetitionInfoViewSet, IllegalityViewSet, \
     CtfCompetitionTableViewSet, CtfSubmitViewSet,CompetitionChoiceSubmitViewSet,UserChoiceInfoViewSet
@@ -39,7 +37,6 @@ router.register('codes', SmsCodeViewset, base_name='codes')
 router.register('teams', TeamViewSet, base_name='teams')
 router.register('competitions', CompetitionViewSet, base_name='competitions')
 router.register('logs', UserLogViewSet, base_name='logs')
-router.register('ctfs', CtfViewSet, base_name='ctfs')
 
 router.register('notices', NoticeViewSet, base_name='notices')
 router.register('teamCompetitionInfos', TeamCompetitionInfoViewSet, base_name='teamCompetitionInfos')

@@ -29,6 +29,11 @@ class TeamCompetitionInfo(models.Model):
     def __str__(self):
         return str(self.id)
 
+from CTF_AWD_Platform.settings import MEDIA_ROOT
+
+def upload_to(instance,filename):
+    return '/'.join([MEDIA_ROOT+'/upload/wp_upload',instance.competition.competition_name,instance.team.team_name,instance.user.username,filename])
+
 
 class UserCompetitionInfo(models.Model):
     '''
@@ -41,6 +46,7 @@ class UserCompetitionInfo(models.Model):
     score_choice = models.IntegerField(default=0, verbose_name="选择题分数")
     score_ctf = models.IntegerField(default=0, verbose_name="ctf总分")
     score_awd = models.IntegerField(default=0, verbose_name="awd总分")
+    wp = models.FileField(null=True,blank=True,upload_to=upload_to)
 
     class Meta:
         verbose_name = '个人比赛详情'
@@ -77,7 +83,7 @@ class Illegality(models.Model):
         unique_together = ('user', 'team', 'competition')
 
     def __str__(self):
-        return str(self.id)
+        return self.user.username
 
 
 class CtfCompetitionTable(models.Model):
