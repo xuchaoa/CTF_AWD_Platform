@@ -24,6 +24,19 @@ class UserCompetitionInfoSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class UserCompetitionInfoUpdateSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+    wp = serializers.FileField(required=True,error_messages={
+        'blank':'未选中文件',
+        'required':'未选中文件'
+    })
+
+    class Meta:
+        model = UserCompetitionInfo
+        fields = ('user','wp')
+
 class IllegalitySerializer(serializers.ModelSerializer):
 
     class Meta:
