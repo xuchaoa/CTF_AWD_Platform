@@ -159,6 +159,10 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.
             team_competition_info.score_all += submit.ctf.ctf_score
             team_competition_info.score_ctf += submit.ctf.ctf_score
             team_competition_info.save()
+            user_competition_info = UserCompetitionInfo.objects.get(Q(competition=submit.competition) & Q(team=team))
+            user_competition_info.score_ctf += submit.ctf.ctf_score
+            user_competition_info.score_all += submit.ctf.ctf_score
+            user_competition_info.save()
         return submit
 
 
