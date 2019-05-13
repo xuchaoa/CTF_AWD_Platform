@@ -50,10 +50,11 @@ class UserProfile(AbstractUser):
 
 class VerifyCode(models.Model):
     """
-    短信验证码
+    验证码
     """
     code = models.CharField(max_length=10, verbose_name="验证码")
-    mobile = models.CharField(max_length=11, verbose_name="电话")
+    mobile = models.CharField(max_length=30, verbose_name="电话或邮箱")
+    type = models.CharField(default='mobile',max_length=25,verbose_name='类型')
     add_time = models.DateTimeField(default=timezone.now, verbose_name="添加时间")
 
     class Meta:

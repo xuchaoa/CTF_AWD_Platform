@@ -29,11 +29,14 @@ from competition.views import CompetitionViewSet
 from notice.views import NoticeViewSet
 from info.views import TeamCompetitionInfoViewSet, UserCompetitionInfoViewSet, IllegalityViewSet, \
     CtfCompetitionTableViewSet, CtfSubmitViewSet,CompetitionChoiceSubmitViewSet,UserChoiceInfoViewSet
+from users.views import EmailCodeViewSet
 
 #
 router = routers.DefaultRouter()  # 路由
 router.register('users', UserViewset, base_name='users')
-router.register('codes', SmsCodeViewset, base_name='codes')
+router.register('smscodes', SmsCodeViewset, base_name='smscodes')
+router.register('emailcodes', EmailCodeViewSet, base_name='emailcodes')
+
 router.register('teams', TeamViewSet, base_name='teams')
 router.register('competitions', CompetitionViewSet, base_name='competitions')
 router.register('logs', UserLogViewSet, base_name='logs')

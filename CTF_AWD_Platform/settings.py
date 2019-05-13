@@ -193,7 +193,7 @@ REST_FRAMEWORK = {
 
 
 AUTHENTICATION_BACKENDS = (
-    'users.views.UserCustomBackend',
+    'utils.CustomBackend.UserCustomBackend',
 )
 
 ## JWT conf
@@ -217,7 +217,8 @@ JWT_AUTH = {
 
 # 手机号码正则表达式
 REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"
-
+#邮箱正则表达式
+REGEX_EMAIL = "^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$"
 
 #Cache缓存配置
 REST_FRAMEWORK_EXTENSIONS = {
@@ -240,8 +241,23 @@ CACHES = {
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
-sentry_sdk.init(
-    dsn="https://7c8deea890d846549ecf814e8eb88292@sentry.io/1457559",
-    integrations=[DjangoIntegration()]
-)
+# sentry_sdk.init(
+#     dsn="https://7c8deea890d846549ecf814e8eb88292@sentry.io/1457559",
+#     integrations=[DjangoIntegration()]
+# )
+
+
+# 163邮箱配置
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 25
+#发送邮件的邮箱
+EMAIL_HOST_USER = '15615833854@163.com'
+#客户端授权密码
+EMAIL_HOST_PASSWORD = 'sdutseclab507'
+#收件人看到的发件人信息
+EMAIL_FROM = 'SDUTCTF2019<15615833854@163.com>'
+EMAIL_USE_TLS = False
+
 

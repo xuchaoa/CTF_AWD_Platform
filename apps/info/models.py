@@ -188,20 +188,3 @@ class UserChoiceInfo(models.Model):
         unique_together = ('user', 'team','competition')
 
 
-# class ChoiceSubmit(models.Model):
-#     '''
-#     选择题选项
-#     '''
-#     result_choice = (
-#         (0, 'A'),
-#         (1, 'B'),
-#         (2, 'C'),
-#         (3, 'D')
-#     )
-#     choice = models.ForeignKey(CompetitionChoice, on_delete=models.CASCADE, verbose_name="选择题ID",
-#                                          related_name="competition_choice_id")
-#     result = models.SmallIntegerField(choices=result_choice, verbose_name="选择答案")
-#
-#     class Meta:
-#         verbose_name = '选择题提交记录'
-#         verbose_name_plural = verbose_name
