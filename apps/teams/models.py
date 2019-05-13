@@ -17,6 +17,7 @@ class TeamProfile(models.Model):
     team_member1 = models.ForeignKey(UserProfile,null=True,blank=True,on_delete=models.SET_NULL,related_name='team_member1')
     team_member2 = models.ForeignKey(UserProfile,null=True,blank=True,on_delete=models.SET_NULL,related_name='team_member2')
     team_member3 = models.ForeignKey(UserProfile,null=True,blank=True,on_delete=models.SET_NULL,related_name='team_member3')
+    team_token = models.CharField(max_length=25)
     competition = models.ForeignKey(CompetitionProfile,null=True,blank=True,on_delete=models.SET_NULL,related_name='team_competition')
 
 
