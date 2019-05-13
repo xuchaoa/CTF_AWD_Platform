@@ -10,7 +10,7 @@ from .models import TeamProfile
 from utils.permissions import IsAuthAndIsOwnerOrReadOnly
 from django.db.models import Q
 from rest_framework import permissions
-from info.models import TeamCompetitionInfo
+from info.models import TeamCompetitionInfo,UserCompetitionInfo
 from competition.models import CompetitionProfile
 
 
@@ -45,6 +45,7 @@ class TeamViewSet(viewsets.ModelViewSet):
     查：团队成员均可查看  --> 测试通过
     创建：任何人登陆的人 --> 测试通过
         自动在TeamCompetitionInfo中添加一条记录  --> ok
+        自动在UserCompetitionInfo中添加一条记录  --> TODO this
     修改：只有队长可以修改 --> ok
         修改是添加比赛操作：自动在TeamCompetitionInfo中添加一条记录  -->  ok
     删除：只有队长可以删除  --> ok
@@ -84,6 +85,11 @@ class TeamViewSet(viewsets.ModelViewSet):
             TeamComInfo.team = team
             TeamComInfo.competition = team.competition
             TeamComInfo.save()
+            UserComInfo = UserCompetitionInfo()
+            UserComInfo.team = team
+            UserComInfo.user = team.team_captain
+            UserComInfo.competition = team.competition
+            UserComInfo.save()
 
     def perform_update(self, serializer):
         team = serializer.save()
