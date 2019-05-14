@@ -43,6 +43,9 @@ class TeamAddOrUpdateSerializer(serializers.ModelSerializer):
     competition = serializers.PrimaryKeyRelatedField(required=True, queryset=CompetitionProfile.objects.all())
     team_token = serializers.CharField(max_length=30, read_only=True)
 
+    def validated_team_captain(self,team_captain):
+        print(team_captain)
+
     def generate_token(self):
         """
         生成30位随机字符串

@@ -98,11 +98,11 @@ class TeamViewSet(viewsets.ModelViewSet):
             TeamComInfo.team = team
             TeamComInfo.competition = team.competition
             TeamComInfo.save()
+
     def perform_destroy(self, instance):
         competition = instance.competition
         TeamComInfo = TeamCompetitionInfo.objects.filter(Q(team=instance) & Q(competition=competition))
         TeamComInfo.delete()
-
         instance.delete()
 
 
