@@ -36,7 +36,7 @@ class CurrentUserIdDefault(serializers.CurrentUserDefault):
 
 class TeamAddSerializer(serializers.ModelSerializer):
     '''
-    用于增加用户
+    用于删除用户
     '''
 
     team_captain = serializers.HiddenField(
@@ -72,7 +72,7 @@ class TeamAddSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TeamProfile
-        fields = ("competition", "team_name", "team_token", "team_captain")
+        fields = ("competition", "team_name", "team_token", "team_captain","team_member1","team_member2","team_member3")
 
 
 class JoinTeamSerializer(serializers.ModelSerializer):
@@ -81,9 +81,6 @@ class JoinTeamSerializer(serializers.ModelSerializer):
                                            'max_length':'token长度错误',
                                            'min_length':'token长度错误'
                                        })
-    team_member = serializers.HiddenField(
-        default=serializers.CurrentUserDefault()
-    )
 
     team_name = serializers.CharField(read_only=True)
 
@@ -97,16 +94,43 @@ class JoinTeamSerializer(serializers.ModelSerializer):
         existed = TeamProfile.objects.filter(Q(team_captain=team_member) | Q(team_member1=team_member) |
                                              Q(team_member2=team_member) | Q(team_member3=team_member))
         if existed:
-            raise serializers.ValidationError('您已经加入其他队伍')
+            raise serializers.ValidationError('您已经加入其他队伍,请退出队伍后重试。')
         else:
             pass
 
 
     def validate(self, attrs):
-        attrs['team_token'] = self.instance.team_token
+        attrs['team_token'] = self.context['request'].data['team_token']
+        attrs['team_member1'] = self.context['request'].user
+        return attrs
+
+    class Meta:
+        model = TeamProfile
+        fields = ("id","team_name","team_token")
+
+
+class QuitTeamSerializer(serializers.ModelSerializer):
+
+    team_member = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+
+
+
+    def validate_team_member(self, team_member):
+
+        existed = TeamProfile.objects.filter(Q(team_captain=team_member) | Q(team_member1=team_member) |
+                                             Q(team_member2=team_member) | Q(team_member3=team_member))
+        if not existed:
+            raise serializers.ValidationError('您未加入任何队伍')
+        else:
+            pass
+
+
+    def validate(self, attrs):
         attrs['team_member'] = self.context['request'].user
         return attrs
 
     class Meta:
         model = TeamProfile
-        fields = ("id","team_name","team_token","team_member")
+        fields = ("id","team_name","team_member")

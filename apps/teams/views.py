@@ -5,12 +5,12 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework import viewsets, mixins
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .serializers import TeamDetailSerializer, TeamAddSerializer,TeamAddSerializer,JoinTeamSerializer
+from .serializers import TeamDetailSerializer, TeamAddSerializer, TeamAddSerializer, JoinTeamSerializer, QuitTeamSerializer
 from .models import TeamProfile
 from utils.permissions import IsAuthAndIsOwnerOrReadOnly
 from django.db.models import Q
 from rest_framework import permissions
-from info.models import TeamCompetitionInfo,UserCompetitionInfo
+from info.models import TeamCompetitionInfo, UserCompetitionInfo
 from competition.models import CompetitionProfile
 from rest_framework.response import Response
 from rest_framework import status
@@ -53,7 +53,7 @@ class TeamViewSet(viewsets.ModelViewSet):
     删除：只有队长可以删除  --> ok
         删除队伍时删除相应记录  -->  ok --> 数据库CASCADE实现
     '''
-   
+
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
 
     # serializer_class = TeamAddOrUpdateSerializer
@@ -82,7 +82,7 @@ class TeamViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         team = serializer.save()
-        if hasattr(team,'competition') and team.competition is not None:
+        if hasattr(team, 'competition') and team.competition is not None:
             TeamComInfo = TeamCompetitionInfo()
             TeamComInfo.team = team
             TeamComInfo.competition = team.competition
@@ -109,8 +109,8 @@ class TeamViewSet(viewsets.ModelViewSet):
         instance.delete()
 
 
-
-class JoinTeamViewSet(mixins.ListModelMixin,mixins.UpdateModelMixin,viewsets.GenericViewSet):
+class JoinTeamViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+                      viewsets.GenericViewSet):
     '''
     增加：
     删除：
@@ -122,7 +122,9 @@ class JoinTeamViewSet(mixins.ListModelMixin,mixins.UpdateModelMixin,viewsets.Gen
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
     serializer_class = JoinTeamSerializer
 
-    def perform_update(self, serializer):
+    def perform_create(self, serializer):
+
+        #serializer.validated_data  实现
         join_team = serializer.save()
         # team = TeamProfile.objects.get(team_token=join_team.team_token)
         if join_team.team_member1 is None:
@@ -137,18 +139,13 @@ class JoinTeamViewSet(mixins.ListModelMixin,mixins.UpdateModelMixin,viewsets.Gen
         else:
             serializer.x = 1
 
-
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
+        self.perform_create(serializer)
 
-        if getattr(instance, '_prefetched_objects_cache', None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
+
+
         if serializer.x == 0:
 
             return Response(serializer.data)
@@ -158,7 +155,30 @@ class JoinTeamViewSet(mixins.ListModelMixin,mixins.UpdateModelMixin,viewsets.Gen
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
+class QuitTeamViewSet(mixins.ListModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    '''
+    增加：
+    删除：
+    修改： 用户退出当前队伍
+    查询：
+    '''
+    queryset = TeamProfile.objects.all()
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
+    serializer_class = QuitTeamSerializer
 
+    def perform_update(self, serializer):
+        quit_team = serializer.save()
+        member1 = TeamProfile.objects.filter(team_member1=team_member)
+        member2 = TeamProfile.objects.filter(team_member2=team_member)
+        member3 = TeamProfile.objects.filter(team_member3=team_member)
 
-
+        if member1 is None and member2 is None and member3 is None:
+            raise serializers.ValidationError("您未加入任何队伍")
+        elif member1 is not None:
+            member1.team_member1 = None
+        elif member2 is not None:
+            member2.team_member2 = None
+        elif member3 is not None:
+            member3.team_member3 = None
 
