@@ -24,20 +24,23 @@ from rest_framework.documentation import include_docs_urls
 from django.conf.urls import include
 from rest_framework import routers
 from users.views import UserViewset, SmsCodeViewset, UserLogViewSet
-from teams.views import TeamViewSet
+from teams.views import TeamViewSet, JoinTeamViewSet
 from competition.views import CompetitionViewSet
 from notice.views import NoticeViewSet
 from info.views import TeamCompetitionInfoViewSet, UserCompetitionInfoViewSet, IllegalityViewSet, \
-    CtfCompetitionTableViewSet, CtfSubmitViewSet,CompetitionChoiceSubmitViewSet,UserChoiceInfoViewSet
+    CtfCompetitionTableViewSet, CtfSubmitViewSet, CompetitionChoiceSubmitViewSet, UserChoiceInfoViewSet
 from users.views import EmailCodeViewSet
 
 #
 router = routers.DefaultRouter()  # 路由
+
 router.register('users', UserViewset, base_name='users')
 router.register('smscodes', SmsCodeViewset, base_name='smscodes')
 router.register('emailcodes', EmailCodeViewSet, base_name='emailcodes')
 
 router.register('teams', TeamViewSet, base_name='teams')
+router.register('jointeams', JoinTeamViewSet, base_name='jointeams')
+
 router.register('competitions', CompetitionViewSet, base_name='competitions')
 router.register('logs', UserLogViewSet, base_name='logs')
 
@@ -50,7 +53,7 @@ router.register('CtfSubmits', CtfSubmitViewSet, base_name='CtfSubmits')
 router.register('CompetitionChoiceSubmits', CompetitionChoiceSubmitViewSet, base_name='UserChoiceInfos')
 router.register('UserChoiceInfos', UserChoiceInfoViewSet, base_name='CompetitionChoiceSubmits')
 
-# router.register('test',views.PermissionTestViewSet,base_name='test')
+
 
 
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
