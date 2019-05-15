@@ -81,3 +81,13 @@ class VerifyCodeDisplay(object):
 xadmin.site.register(models.VerifyCode, VerifyCodeDisplay)
 
 
+class UserLogDisply(object):
+    list_display = {'user', 'user_login_time', 'user_login_ip', 'user_login_agent', 'user_login_os'}
+    list_filter = {'user_login_time', 'user_login_agent', 'user_login_os'}
+    search_fields = {'user__username', 'user_login_ip', 'user_login_agent', 'user_login_os'}
+    ordering = ['-user_login_time']
+    list_per_page = 10
+
+xadmin.site.register(models.UserLoginLog, UserLogDisply)
+
+

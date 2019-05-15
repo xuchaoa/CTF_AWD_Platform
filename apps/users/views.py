@@ -22,6 +22,8 @@ from random import choice
 from utils.SMS import SendSMS
 from rest_framework import status
 from rest_framework.response import Response
+import platform
+from user_agents import parse
 
 
 class MyAuth(BaseAuthentication):
@@ -171,7 +173,7 @@ class SmsCodeViewset(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
 class UserLogViewSet(viewsets.ModelViewSet):
     '''
-    增加： TODO this
+    增加：不开放api
     删除：不开放api
     修改：不开放api
     查询：只能查询当前用户
@@ -183,6 +185,60 @@ class UserLogViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return UserLoginLog.objects.filter(user=self.request.user)
+
+        # 获取OS
+    def get_os(self, request):
+        print("os---", platform.platform(request))
+        return platform.platform(request)
+
+    # 获取IP地址
+    # def get_ip(request):
+    #     try:
+    #         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    #         if x_forwarded_for:
+    #             ip = x_forwarded_for.split(',')[0]  # 所以这里是真实的ip
+    #         else:
+    #             ip = request.META.get('REMOTE_ADDR')  # 这里获得代理ip
+    #     except:
+    #         ip = None
+    #
+    #     # return HttpResponse("request_ip : %s" % ip)
+    #     print("ip--",ip)
+    #     return ip
+    def get_ip(self, request):
+        #if request.META.has_key('HTTP_X_FORWARDED_FOR'):
+        if 'HTTP_X_FORWARDED_FOR' in request.META:
+            ip = request.META['HTTP_X_FORWARDED_FOR']
+        else:
+            ip = request.META['REMOTE_ADDR']
+        return ip
+
+    #获取user-agent
+    def get_ua(self, request):
+        # return request.headers.get('User-Agent')
+        ua_string = request.META.get('HTTP_USER_AGENT', '')
+        # 解析为user_agent
+        user_agent = parse(ua_string)
+        # 判断浏览器
+        bw = user_agent.browser.family
+        # 判断操作系统
+        s = user_agent.os.family
+        # 输出
+        print(ua_string)
+        print(user_agent)
+        print(bw)
+        print(s)
+        return bw
+
+    def perform_create(self, serializer):
+        UserLogin = UserLoginLog()
+        # a = serializer.save()
+        # print(a)
+        UserLogin.user = self.request.user
+        UserLogin.user_login_os = self.get_os(request=self.request)
+        UserLogin.user_login_ip = self.get_ip(request=self.request)
+        UserLogin.user_login_agent = self.get_ua(request=self.request)
+        UserLogin.save()
 
 # 下面是测试代码
 #
