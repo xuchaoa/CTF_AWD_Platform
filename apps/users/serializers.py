@@ -9,9 +9,9 @@ from .models import UserProfile
 from teams.models import TeamProfile
 import re
 from datetime import datetime
-from .models import VerifyCode,UserLoginLog
+from .models import VerifyCode, UserLoginLog
 from datetime import timedelta
-from CTF_AWD_Platform.settings import REGEX_MOBILE
+from CTF_AWD_Platform.settings import REGEX_MOBILE, REGEX_EMAIL
 from rest_framework.validators import UniqueValidator  # 直接调用封装好的
 
 from django.contrib.auth import get_user_model
@@ -41,15 +41,25 @@ class UserRegSerializer(serializers.ModelSerializer):
                                      "min_length": "验证码长度错误"
                                  },
                                  write_only=True, help_text='验证码')  # write_only=True只写入，不会在创建成功后返回
-    user_phone = serializers.CharField(help_text="用户名", required=True, allow_blank=False,
+    user_phone = serializers.CharField(help_text="用户名", allow_blank=False,
                                        validators=[UniqueValidator(queryset=User.objects.all(), message="手机号已经存在")])
 
+    username = serializers.CharField(read_only=True)
+    email = serializers.CharField(read_only=True)
     password = serializers.CharField(required=True, allow_blank=False, style={'input_type': 'password'}, help_text='密码',
                                      label='密码', write_only=True)
+    email_or_mobile = serializers.CharField(allow_blank=False, write_only=True)
 
     def validate_code(self, code):
         # 验证码在数据库中是否存在，用户从前端post过来的值都会放入initial_data里面，排序(最新一条)。
-        verify_records = VerifyCode.objects.filter(mobile=self.initial_data["user_phone"]).order_by("-add_time")
+        type = (self.initial_data['email_or_mobile'])
+        verify_records = None
+        if type == 'mobile':
+            verify_records = VerifyCode.objects.filter(mobile=self.initial_data["user_phone"]).order_by("-add_time")
+
+        elif type == 'email':
+            verify_records = VerifyCode.objects.filter(mobile=self.initial_data["user_phone"]).order_by("-add_time")
+
         if verify_records:
             # 获取到最新一条
             last_record = verify_records[0]
@@ -74,8 +84,14 @@ class UserRegSerializer(serializers.ModelSerializer):
         :param attrs: attrs是字段 validate之后返回的总的dict
         :return:
         '''
-        attrs['username'] = attrs['user_phone']
+        if attrs['email_or_mobile'] == 'mobile':
+            attrs['username'] = attrs['user_phone']
+        elif attrs['email_or_mobile'] == 'email':
+            attrs['username'] = attrs['user_phone']
+            attrs['email'] = attrs['user_phone']
+            attrs['user_phone'] = None
         del attrs['code']
+        del attrs['email_or_mobile']
         '''
         这里注意一定要删除，否则下面错误：提示数据库中没有该字段
         Got AttributeError when attempting to get a value for field `code` on serializer `UserRegSerializer`.
@@ -84,28 +100,20 @@ class UserRegSerializer(serializers.ModelSerializer):
         '''
         return attrs
 
-
     def create(self, validated_data):
         '''
         不适用signals实现，因为在update时也会调用signals，会出现bug
         :param validated_data:
         :return:
         '''
-        user = super(UserRegSerializer,self).create(validated_data=validated_data)
+        user = super(UserRegSerializer, self).create(validated_data=validated_data)
         user.set_password(validated_data['password'])
         user.save()
         return user
 
     class Meta:
         model = User
-        fields = ("user_phone", "code", "password")  # DRF web表单显示字段
-        # fields = '__all__'
-
-
-#     class Meta:
-#         model = UserProfile
-#         # fields = ('id','user_name','user_school') #设置Api显示字段
-#         fields = '__all__'
+        fields = ("user_phone","code", "password", "email_or_mobile", "username", "email", )  # DRF web表单显示字段
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -116,7 +124,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'username','user_phone', 'user_gender', 'user_number', 'email', 'user_school', 'user_major', 'user_url',
+            'username', 'user_phone', 'user_gender', 'user_number', 'email', 'user_school', 'user_major', 'user_url',
             'user_image', 'user_registertime')
 
 
@@ -124,37 +132,60 @@ class SmsSerializer(serializers.Serializer):
     '''
     验证某些字段
     '''
-    mobile = serializers.CharField(max_length=11)
+    mobile = serializers.CharField(max_length=11, label='手机号', help_text='请输入手机号')
 
-    def validate_user_phone(self, phone):
+    def validate_mobile(self, phone):
         """
         验证手机号码(函数名称必须为validate_ + 字段名)
         """
-        # 手机是否注册
-        if User.objects.filter(user_phone=phone).exists():
-            raise serializers.ValidationError("用户已经存在")
-
         # 验证手机号码是否合法
         if not re.match(REGEX_MOBILE, phone):
             raise serializers.ValidationError("手机号码非法")
 
+        # 手机是否注册
+        if User.objects.filter(user_phone=phone).exists():
+            raise serializers.ValidationError("手机号已经被注册")
+
         # 验证码发送频率
         one_mintes_ago = datetime.now() - timedelta(hours=0, minutes=1, seconds=0)
-        if VerifyCode.objects.filter(add_time__gt=one_mintes_ago, user_phone=phone).count():
+        if VerifyCode.objects.filter(add_time__gt=one_mintes_ago, mobile=phone).count():
             raise serializers.ValidationError("距离上一次发送未超过60s")
 
         return phone
 
+
+class EmailSerializer(serializers.Serializer):
+    '''
+    对邮箱格式等进行验证
+    '''
+    mobile = serializers.CharField(max_length=25, label='邮箱', help_text='请输入邮箱')
+
+    def validate_mobile(self, email):
+
+        if not re.match(REGEX_EMAIL, email):
+            raise serializers.ValidationError("邮箱格式非法")
+
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError("该邮箱已经被注册")
+
+        # 验证码发送频率
+        one_mintes_ago = datetime.now() - timedelta(hours=0, minutes=1, seconds=0)
+        if VerifyCode.objects.filter(add_time__gt=one_mintes_ago, mobile=email).count():
+            raise serializers.ValidationError("距离上一次发送未超过60s")
+
+        return email
 
 
 class LogSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
     )
+
     user_login_time = serializers.DateTimeField(read_only=True, format='%Y-%m-%d %H:%M:%S')
     user_login_ip = serializers.CharField(read_only=True)
     user_login_agent = serializers.CharField(read_only=True)
     user_login_os = serializers.CharField(read_only=True)
+
 
     class Meta:
         model = UserLoginLog

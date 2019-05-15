@@ -3,8 +3,8 @@ from django.shortcuts import render
 # Create your views here.
 
 
-from .serializers import UserRegSerializer, SmsSerializer, UserDetailSerializer, LogSerializer
-from .models import UserProfile, VerifyCode ,UserLoginLog
+from .serializers import UserRegSerializer, SmsSerializer, UserDetailSerializer, LogSerializer, EmailSerializer
+from .models import UserProfile, VerifyCode, UserLoginLog
 from rest_framework import mixins, generics, permissions
 from rest_framework import viewsets
 from rest_framework.authentication import BaseAuthentication  # 基础验证。必须重写其中的方法
@@ -45,37 +45,21 @@ class UserProfilePagination(PageNumberPagination):
     max_page_size = 50
 
 
-from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
-from django.db.models import Q
 
 User = get_user_model()  # 获取setting.py中AUTH_USER_MODEL指定的User model
 
 
-class UserCustomBackend(ModelBackend):
-    '''
-    自定义用户验证(全局配置就行)
-    我们可以使用符号&或者|将多个Q()对象组合起来传递给filter()，exclude()，get()等函数。当多个Q()对象组合起来时，Django会自动生成一个新的Q()
-    tips: 测试完成
-    '''
-
-    def authenticate(self, request, username=None, password=None, **kwargs):
-        try:
-            user = User.objects.get(Q(username=username) | Q(user_phone=username))
-            if user.check_password(password):
-                return user
-            else:
-                return None
-        except Exception as e:
-            return None
-
-
 class UserViewset(mixins.UpdateModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     '''
-    User查询、注册、修改
+    User
+    增加：
+    删除：
+    修改：
+    查询：
     '''
     # queryset = UserProfile.objects.all()
-    serializer_class = UserRegSerializer
+    # serializer_class = UserRegSerializer
     pagination_class = UserProfilePagination  # fix warining #20
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
     # permission_classes = (UserPermission,)
@@ -129,7 +113,7 @@ class SmsCodeViewset(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     def generate_code(self):
         """
-        生成四位数字的验证码字符串
+        生成5位数字的验证码字符串
         """
         seeds = "1234567890"
         random_str = []
@@ -164,11 +148,49 @@ class SmsCodeViewset(mixins.CreateModelMixin, viewsets.GenericViewSet):
                 "mobile": mobile
             }, status=status.HTTP_400_BAD_REQUEST)
         else:
-            code_record = VerifyCode(code=code, mobile=mobile)
+            code_record = VerifyCode(code=code, mobile=mobile, type='mobile')
             code_record.save()
             return Response({
                 "mobile": mobile
             }, status=status.HTTP_201_CREATED)
+
+
+from utils.Email import SendMail
+
+
+class EmailCodeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    serializer_class = EmailSerializer
+
+    def generate_code(self):
+        """
+        生成5位数字的验证码字符串
+        """
+        seeds = "1234567890"
+        random_str = []
+        for i in range(6):
+            random_str.append(choice(seeds))
+
+        return "".join(random_str)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        mobile = serializer.validated_data['mobile']
+        list = []
+        list.append(mobile)
+        code = self.generate_code()
+        send_status = SendMail(code, list)
+        if send_status:
+            code_record = VerifyCode(code=code, mobile=mobile, type='email')
+            code_record.save()
+            return Response({
+                "mobile": mobile
+            }, status=status.HTTP_201_CREATED)
+        else:
+            return Response({
+                "mobile": mobile
+            }, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLogViewSet(viewsets.ModelViewSet):
@@ -185,6 +207,7 @@ class UserLogViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return UserLoginLog.objects.filter(user=self.request.user)
+
 
         # 获取OS
     def get_os(self, request):
