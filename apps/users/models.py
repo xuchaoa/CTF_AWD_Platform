@@ -70,7 +70,7 @@ class UserLoginLog(models.Model):
     user_login_time = models.DateTimeField(default=timezone.now,verbose_name='登陆时间')
     user_login_ip = models.CharField(max_length=15,verbose_name='登陆ip')
     user_login_agent = models.CharField(max_length=200,verbose_name='UA')
-    user_login_os = models.CharField(max_length=50,verbose_name='OS')
+    user_login_os = models.CharField(max_length=100,verbose_name='OS')
 
     class Meta:
         verbose_name = '登录日志'
