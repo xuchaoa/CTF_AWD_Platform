@@ -76,8 +76,5 @@ class UserLoginLog(models.Model):
         verbose_name = '登录日志'
         verbose_name_plural = verbose_name
 
-    # TODO this
-    # xadmin添加用户登录日志报错TypeError at /x_admin/users/userloginlog/add/
-    # 'str' object is not callable
     def __str__(self):
         return '{}.{}'.format(self.user.username,self.user_login_ip)
