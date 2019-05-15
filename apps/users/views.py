@@ -23,7 +23,7 @@ from utils.SMS import SendSMS
 from rest_framework import status
 from rest_framework.response import Response
 import platform
-from user_agents import parse
+import user_agents
 
 
 class MyAuth(BaseAuthentication):
@@ -209,25 +209,12 @@ class UserLogViewSet(viewsets.ModelViewSet):
         return UserLoginLog.objects.filter(user=self.request.user)
 
 
-        # 获取OS
+    # 获取OS
     def get_os(self, request):
         print("os---", platform.platform(request))
         return platform.platform(request)
 
     # 获取IP地址
-    # def get_ip(request):
-    #     try:
-    #         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    #         if x_forwarded_for:
-    #             ip = x_forwarded_for.split(',')[0]  # 所以这里是真实的ip
-    #         else:
-    #             ip = request.META.get('REMOTE_ADDR')  # 这里获得代理ip
-    #     except:
-    #         ip = None
-    #
-    #     # return HttpResponse("request_ip : %s" % ip)
-    #     print("ip--",ip)
-    #     return ip
     def get_ip(self, request):
         #if request.META.has_key('HTTP_X_FORWARDED_FOR'):
         if 'HTTP_X_FORWARDED_FOR' in request.META:
@@ -241,7 +228,7 @@ class UserLogViewSet(viewsets.ModelViewSet):
         # return request.headers.get('User-Agent')
         ua_string = request.META.get('HTTP_USER_AGENT', '')
         # 解析为user_agent
-        user_agent = parse(ua_string)
+        user_agent = user_agents.parsers(ua_string)
         # 判断浏览器
         bw = user_agent.browser.family
         # 判断操作系统
@@ -263,44 +250,3 @@ class UserLogViewSet(viewsets.ModelViewSet):
         UserLogin.user_login_agent = self.get_ua(request=self.request)
         UserLogin.save()
 
-# 下面是测试代码
-#
-#
-# class IsOwnerOrReadOnly(permissions.BasePermission):
-#     """
-#     Object-level permission to only allow owners of an object to edit it.
-#     Assumes the model instance has an `owner` attribute.
-#
-#     """
-#
-#     def has_object_permission(self, request, view, obj):
-#         # Read permissions are allowed to any request,
-#         # so we'll always allow GET, HEAD or OPTIONS requests.
-#         if request.method in permissions.SAFE_METHODS:
-#             return True
-#
-#         # Instance must have an attribute named `owner`.
-#         return obj.username == request.user
-#
-# from rest_framework import serializers
-# class AddressSerializer(serializers.ModelSerializer):
-#     '''
-#     测试失败，因为username具有unique约束
-#     '''
-#     username = serializers.HiddenField(
-#         default=serializers.CurrentUserDefault(),
-#
-#     )
-#
-#     class Meta:
-#         model = User
-#         fields = ("id", "username","user_phone")
-#
-#
-# class PermissionTestViewSet(viewsets.ModelViewSet):
-#     permission_classes = (IsAuthenticated,IsOwnerOrReadOnly)
-#     authentication_classes = (JSONWebTokenAuthentication,SessionAuthentication)
-#     serializer_class = AddressSerializer
-#
-#     def get_queryset(self):
-#         return User.objects.filter(username=self.request.user)
