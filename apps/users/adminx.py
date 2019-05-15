@@ -77,6 +77,8 @@ xadmin.site.register(models.UserProfile, UserDisplay)
 
 class VerifyCodeDisplay(object):
     list_display = ('id','code','mobile','add_time')
+    ordering = ['-add_time']
+    list_per_page = 10
 
 xadmin.site.register(models.VerifyCode, VerifyCodeDisplay)
 
