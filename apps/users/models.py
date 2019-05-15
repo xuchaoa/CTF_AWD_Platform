@@ -73,8 +73,11 @@ class UserLoginLog(models.Model):
     user_login_os = models.CharField(max_length=50,verbose_name='OS')
 
     class Meta:
-        verbose_name = '用户登录日志'
+        verbose_name = '登录日志'
         verbose_name_plural = verbose_name
 
-    def __str__(self):
-        return '%s(%s)'(self.user.username,self.user_login_ip)
+    # TODO this
+    # xadmin添加用户登录日志报错TypeError at /x_admin/users/userloginlog/add/
+    # 'str' object is not callable
+    # def __str__(self):
+    #     return '%s(%s)'(self.user.username,self.user_login_ip)

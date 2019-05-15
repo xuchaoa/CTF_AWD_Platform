@@ -181,6 +181,12 @@ class LogSerializer(serializers.ModelSerializer):
         default=serializers.CurrentUserDefault()
     )
 
+    user_login_time = serializers.DateTimeField(read_only=True, format='%Y-%m-%d %H:%M:%S')
+    user_login_ip = serializers.CharField(read_only=True)
+    user_login_agent = serializers.CharField(read_only=True)
+    user_login_os = serializers.CharField(read_only=True)
+
+
     class Meta:
         model = UserLoginLog
         fields = '__all__'
