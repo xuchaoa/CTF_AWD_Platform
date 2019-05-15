@@ -101,7 +101,7 @@ class JoinTeamSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         attrs['team_token'] = self.context['request'].data['team_token']
-        attrs['team_member1'] = self.context['request'].user
+        attrs['team_member'] = self.context['request'].user
         return attrs
 
     class Meta:

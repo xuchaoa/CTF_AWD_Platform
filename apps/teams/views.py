@@ -121,23 +121,25 @@ class JoinTeamViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Ret
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
     serializer_class = JoinTeamSerializer
+    flag = 0
 
     def perform_create(self, serializer):
 
-        #serializer.validated_data  实现
-        join_team = serializer.save()
-        # team = TeamProfile.objects.get(team_token=join_team.team_token)
+        team = serializer.validated_data
+
+        join_team = TeamProfile.objects.get(team_token=team['team_token'])
         if join_team.team_member1 is None:
-            join_team.team_member1 = join_team.team_member
+            join_team.team_member1 = team['team_member']
             join_team.save()
         elif join_team.team_member2 is None:
-            join_team.team_member2 = join_team.team_member
+            join_team.team_member2 = team['team_member']
             join_team.save()
         elif join_team.team_member3 is None:
-            join_team.team_member3 = join_team.team_member
+            join_team.team_member3 = team['team_member']
             join_team.save()
         else:
-            serializer.x = 1
+            self.flag = 1
+        # serializer.save()
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -146,10 +148,12 @@ class JoinTeamViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Ret
 
 
 
-        if serializer.x == 0:
+        if self.flag == 0:
 
-            return Response(serializer.data)
-        elif serializer.x == 1:
+            return Response({
+                "notice":"加入队伍成功"
+            },status=status.HTTP_200_OK)
+        elif self.flag == 1:
             return Response({
                 "notice": "队伍已满"
             }, status=status.HTTP_400_BAD_REQUEST)
