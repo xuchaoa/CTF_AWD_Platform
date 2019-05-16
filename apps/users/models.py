@@ -25,7 +25,7 @@ class UserProfile(AbstractUser):
     # user_password = models.CharField(max_length=50, null=False, blank=True, verbose_name="密码")
     user_school = models.CharField(max_length=30, null=True, blank=True, verbose_name="学校",help_text='学校')
     user_major = models.CharField(max_length=30, null=True, blank=True, verbose_name="专业班级",help_text='专业班级')
-    user_phone = models.CharField(max_length=11, null=True, blank=True,unique=True, verbose_name="手机")
+    user_phone = models.CharField(max_length=11, null=True, blank=True,unique=True, verbose_name="手机",help_text='手机')
     user_number = models.CharField(max_length=11,null=True,blank=True,unique=True,verbose_name='学号',help_text='学号')
     # user_email = models.CharField(max_length=30,null=True,blank=True,unique=True,verbose_name='邮箱')
     user_image = models.ImageField(upload_to='avatar/%Y/%m/%d',verbose_name='头像',blank=True)

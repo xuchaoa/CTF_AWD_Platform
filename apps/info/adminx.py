@@ -27,7 +27,7 @@ xadmin.site.register(models.TeamCompetitionInfo, TeamCompetitionInfoDisplay)
 
 
 class UserCompetitionInfoDisplay(object):
-    list_display = ['user', 'team', 'competition', 'score_all', 'score_choice', 'score_ctf', 'score_awd']
+    list_display = ['user', 'team', 'competition', 'score_all', 'score_choice', 'score_ctf', 'score_awd','wp']
     search_fields = ['user__username', 'team__team_name', 'competition__competition_name', 'score_all', 'score_choice',
                      'score_ctf', 'score_awd']
     list_filter = ['team', 'competition',  'score_all', 'score_choice', 'score_ctf', 'score_awd']
