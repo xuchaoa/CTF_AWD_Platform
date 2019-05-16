@@ -33,4 +33,7 @@ django-redis==4.10.0
 sentry-sdk==0.7.14
 PyYAML==3.12
 coreapi==2.3.3
+user_agents==2.0
+django-cors-headers==3.0.1
+
 
