@@ -110,13 +110,9 @@ class JoinTeamSerializer(serializers.ModelSerializer):
 
 
 class QuitTeamSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
 
-    team_member = serializers.HiddenField(
-        default=serializers.CurrentUserDefault()
-    )
-
-
-
+    team_name = serializers.CharField(read_only=True)
     def validate_team_member(self, team_member):
 
         existed = TeamProfile.objects.filter(Q(team_captain=team_member) | Q(team_member1=team_member) |
@@ -133,4 +129,4 @@ class QuitTeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TeamProfile
-        fields = ("id","team_name","team_member")
+        fields = ("id","team_name")
