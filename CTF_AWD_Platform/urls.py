@@ -30,6 +30,7 @@ from notice.views import NoticeViewSet
 from info.views import TeamCompetitionInfoViewSet, UserCompetitionInfoViewSet, IllegalityViewSet, \
     CtfCompetitionTableViewSet, CtfSubmitViewSet, CompetitionChoiceSubmitViewSet, UserChoiceInfoViewSet
 from users.views import EmailCodeViewSet
+from teams.views import QuitTeamViewSet
 
 #
 router = routers.DefaultRouter()  # 路由
@@ -40,6 +41,7 @@ router.register('emailcodes', EmailCodeViewSet, base_name='emailcodes')
 
 router.register('teams', TeamViewSet, base_name='teams')
 router.register('jointeams', JoinTeamViewSet, base_name='jointeams')
+router.register('quitteams',QuitTeamViewSet,base_name='quitteams')
 
 router.register('competitions', CompetitionViewSet, base_name='competitions')
 router.register('logs', UserLogViewSet, base_name='logs')

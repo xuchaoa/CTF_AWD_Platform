@@ -14,7 +14,7 @@ from info.models import TeamCompetitionInfo, UserCompetitionInfo
 from competition.models import CompetitionProfile
 from rest_framework.response import Response
 from rest_framework import status
-
+from rest_framework import serializers
 
 # Create your views here.
 
@@ -146,8 +146,6 @@ class JoinTeamViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Ret
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
 
-
-
         if self.flag == 0:
 
             return Response({
@@ -159,7 +157,7 @@ class JoinTeamViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Ret
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
-class QuitTeamViewSet(mixins.ListModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class QuitTeamViewSet(mixins.ListModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin,mixins.CreateModelMixin ,viewsets.GenericViewSet):
     '''
     增加：
     删除：
@@ -171,18 +169,29 @@ class QuitTeamViewSet(mixins.ListModelMixin, mixins.UpdateModelMixin, mixins.Ret
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
     serializer_class = QuitTeamSerializer
 
-    def perform_update(self, serializer):
-        quit_team = serializer.save()
-        member1 = TeamProfile.objects.filter(team_member1=team_member)
-        member2 = TeamProfile.objects.filter(team_member2=team_member)
-        member3 = TeamProfile.objects.filter(team_member3=team_member)
+    def perform_create(self, serializer):
+        quit_team = serializer.validated_data
+        member1 = TeamProfile.objects.filter(team_member1=quit_team['team_member'])
+        member2 = TeamProfile.objects.filter(team_member2=quit_team['team_member'])
+        member3 = TeamProfile.objects.filter(team_member3=quit_team['team_member'])
 
-        if member1 is None and member2 is None and member3 is None:
+        if not member1 and not member2 and not member3:
             raise serializers.ValidationError("您未加入任何队伍")
-        elif member1 is not None:
-            member1.team_member1 = None
-        elif member2 is not None:
-            member2.team_member2 = None
-        elif member3 is not None:
-            member3.team_member3 = None
+        elif member1 :
+            member1[0].team_member1 = None
+            member1[0].save()
+        elif member2 :
+            member2[0].team_member2 = None
+            member2[0].save()
+        elif member3 :
+            member3[0].team_member3 = None
+            member3[0].save()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        return Response(serializer.data)
+
 
