@@ -50,7 +50,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()  # 获取setting.py中AUTH_USER_MODEL指定的User model
 
 
-class UserViewset(mixins.UpdateModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class UserViewset(mixins.UpdateModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     '''
     User
     增加：
