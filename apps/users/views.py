@@ -122,6 +122,7 @@ class SmsCodeViewset(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
         return "".join(random_str)
 
+    from celery_tasks.SendCode import tasks as SendCode
     def create(self, request, *args, **kwargs):
         '''
         对CreateModelMixin 中的create方法进行重写，发送验证码并保存到数据库中
@@ -135,27 +136,22 @@ class SmsCodeViewset(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
         mobile = serializer.validated_data["mobile"]
 
-        yun_pian = SendSMS()
 
         code = self.generate_code()
         data = [code, '5']  # 验证码在五分钟后失效
 
-        sms_status = yun_pian.SendSms(to=mobile, data=data, tempId=1)
-        print(sms_status)
+        SendCode.SendSMS.delay(to=mobile, data=data, tempId=1)
 
-        if sms_status["statusCode"] != '000000':
-            return Response({
-                "mobile": mobile
-            }, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            code_record = VerifyCode(code=code, mobile=mobile, type='mobile')
-            code_record.save()
-            return Response({
+
+        code_record = VerifyCode(code=code, mobile=mobile, type='mobile')
+        code_record.save()
+        return Response({
                 "mobile": mobile
             }, status=status.HTTP_201_CREATED)
 
 
 from utils.Email import SendMail
+from celery_tasks.SendCode import tasks as SendCode
 
 
 class EmailCodeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -180,17 +176,14 @@ class EmailCodeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         list = []
         list.append(mobile)
         code = self.generate_code()
-        send_status = SendMail(code, list)
-        if send_status:
-            code_record = VerifyCode(code=code, mobile=mobile, type='email')
-            code_record.save()
-            return Response({
+        SendCode.SendMail.delay(code, list)
+
+        code_record = VerifyCode(code=code, mobile=mobile, type='email')
+        code_record.save()
+        return Response({
                 "mobile": mobile
             }, status=status.HTTP_201_CREATED)
-        else:
-            return Response({
-                "mobile": mobile
-            }, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class UserLogViewSet(viewsets.ModelViewSet):
@@ -225,7 +218,9 @@ class UserLogViewSet(viewsets.ModelViewSet):
     def get_ua(self, request):
         ua_string = request.META.get('HTTP_USER_AGENT', '')
         # 解析为user_agent
+        print(ua_string)
         user_agent = user_agents.parse(ua_string)
+        print("1111s")
         # 判断浏览器
         bw = user_agent.browser.family
         # 判断操作系统
