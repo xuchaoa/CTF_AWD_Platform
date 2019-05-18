@@ -72,3 +72,12 @@ redis监控： http://www.treesoft.cn/dms.html
 
 sentry: https://github.com/getsentry/sentry
 
+# 部署步骤
+
+## 运行celery
+celery -A celery_tasks.main worker -l info
+
+
+## 运行flower监控
+celery -A celery_tasks.main flower -l info --auto_refresh=True
+

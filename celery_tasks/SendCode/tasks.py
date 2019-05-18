@@ -7,8 +7,7 @@
 # @Software: PyCharm
 
 from celery_tasks.main import app
-import time
-from DEMO.SDK.CCPRestSDK import REST
+from utils.DEMO.SDK.CCPRestSDK import REST
 
 
 
@@ -17,8 +16,6 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "CTF_AWD_Platform.settings")
 django.setup()
 from django.conf import settings
 from django.core.mail import send_mail
-from random import choice
-
 
 
 @app.task()

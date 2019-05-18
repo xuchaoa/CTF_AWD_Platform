@@ -3,7 +3,7 @@
 # Author: Archerx
 # @time: 2019/4/19 上午 08:18
 
-from DEMO.SDK.CCPRestSDK import REST
+from utils.DEMO.SDK.CCPRestSDK import REST
 
 
 class SendSMS(object):

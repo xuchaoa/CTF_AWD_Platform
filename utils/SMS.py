@@ -4,7 +4,7 @@
 # @time: 2019/4/20 下午 08:28
 
 
-from DEMO.SDK.CCPRestSDK import REST
+from utils.DEMO.SDK.CCPRestSDK import REST
 
 
 class SendSMS(object):
