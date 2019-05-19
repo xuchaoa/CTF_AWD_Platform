@@ -126,7 +126,7 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.
     ctf提交记录
 
     增加： Auth并且参加了该比赛  ok
-    并且在比赛时间内 TODO this
+    并且在比赛时间内 ok
     修改相应表格： CtfCompetitionTable  ok   TeamCompetitionInfo  ok
     删除： None
     修改： None
@@ -134,11 +134,15 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.
     提交flag后不返回前端  -->  ok
     '''
     throttle_scope = 'CtfSubmit'
-    queryset = CtfSubmit.objects.all()
+
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
 
     # serializer_class = CtfSubmitSerializer
+
+    def get_queryset(self):
+        return CtfSubmit.objects.all()
+
     def get_serializer_class(self):
         if self.action == 'create':
             return CtfSubmitAddSerializer

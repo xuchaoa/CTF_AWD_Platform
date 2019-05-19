@@ -39,9 +39,9 @@ class UserCompetitionInfo(models.Model):
     '''
     团队比赛个人得分表
     '''
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='队员')
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='队员',related_name='user_info')
     team = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name='队伍')
-    competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛')
+    competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛',related_name='user_competition')
     score_all = models.IntegerField(default=0, verbose_name="个人总分")
     score_choice = models.IntegerField(default=0, verbose_name="选择题分数")
     score_ctf = models.IntegerField(default=0, verbose_name="ctf总分")
