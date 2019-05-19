@@ -242,16 +242,12 @@ class UserChoiceInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mi
         competition = UserChoiceIn.competition
         team = UserChoiceIn.team
         user = UserChoiceIn.user
-        choice_library_num = ChoiceLibrary.objects.count()
+        choice_library = ChoiceLibrary.objects.all()
         choice_num = competition.competition_choicenum
-        choice_id = []
-        while(len(choice_id) < choice_num):
-            x = random.randint(1,choice_library_num)
-            if x not in choice_id:
-                choice_id.append(x)
-        choice = []
-        for i in choice_id:
-            choice.append(ChoiceLibrary.objects.get(id=i))
+
+
+        choice = random.sample(list(choice_library),choice_num)
+
         for i in choice:
             _ = CompetitionChoiceSubmit()
             _.competition = competition

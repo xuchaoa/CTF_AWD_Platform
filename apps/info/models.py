@@ -145,10 +145,10 @@ class CompetitionChoiceSubmit(models.Model):
     选择题抽取题目&提交记录
     '''
     result_choice = (
-        (0, 'A'),
-        (1, 'B'),
-        (2, 'C'),
-        (3, 'D')
+        ('A', 'A'),
+        ('B', 'B'),
+        ('C', 'C'),
+        ('D', 'D')
     )
     competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, related_name="competition_choice",default=None)
     team = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name='队伍',default=None)
@@ -156,8 +156,8 @@ class CompetitionChoiceSubmit(models.Model):
     choice = models.ForeignKey(ChoiceLibrary, on_delete=models.CASCADE, verbose_name="选择题ID",
                                related_name="choice_choice",default=None)
     score = models.IntegerField()
-    true_result = models.SmallIntegerField(choices=result_choice,verbose_name='正确答案')
-    submit_result = models.SmallIntegerField(choices=result_choice,null=True,blank=True,verbose_name='提交的答案')
+    true_result = models.CharField(max_length=2,choices=result_choice,verbose_name='正确答案')
+    submit_result = models.CharField(max_length=2,choices=result_choice,null=True,blank=True,verbose_name='提交的答案')
     result = models.BooleanField(null=True,blank=True,verbose_name='答案是否正确')
 
     def __str__(self):

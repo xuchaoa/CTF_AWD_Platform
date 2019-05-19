@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'notice.apps.NoticeConfig',
     'django_filters',
     'corsheaders',
+    'import_export',
 
 ]
 
