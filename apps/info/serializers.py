@@ -8,7 +8,7 @@ from django.forms.models import model_to_dict
 from django.db.models import Q
 from .models import Illegality, UserCompetitionInfo, TeamCompetitionInfo,CompetitionChoiceSubmit,UserChoiceInfo
 from choice.serializers import ChoiceSerializer
-
+from hashlib import md5
 
 class TeamCompetitionInfoSerializer(serializers.ModelSerializer):
 
@@ -103,6 +103,10 @@ class CtfSubmitAddSerializer(serializers.ModelSerializer):
         if CtfSubmit.objects.filter(Q(user=attrs['user']) & Q(ctf=attrs['ctf']) & Q(submit_result=True)).exists():
             raise serializers.ValidationError('已提交过正确的flag')
         flag = attrs['ctf'].ctf_flag
+        jwt = self._context['request'].auth
+        jwt = jwt.decode()
+        _ = jwt.split(".")[2]
+        flag = md5((flag + _).encode()).hexdigest()
         if flag == attrs['submit_flag']:
             attrs['submit_result'] = True
         else:

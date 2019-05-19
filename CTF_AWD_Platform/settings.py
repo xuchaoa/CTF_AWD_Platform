@@ -203,7 +203,7 @@ AUTHENTICATION_BACKENDS = (
 
 ## JWT conf
 
-## :TODO： 字段设置失效，直接修改源代码，原因初步判断是Bug
+## :TODO： 字段设置失效，直接修改源代码
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=3),   #有效期180分钟
@@ -220,16 +220,19 @@ JWT_AUTH = {
 # ACCOUNT_SID = '8a216da86a2a8174016a39f0748d09ec'
 # AUTH_TOKEN = 'dd49474506d14a07b5acffdf0468c44f'
 
+
 # 手机号码正则表达式
 REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"
 #邮箱正则表达式
 REGEX_EMAIL = "^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$"
+
 
 #Cache缓存配置
 REST_FRAMEWORK_EXTENSIONS = {
     'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60*5, #五分钟
     'DEFAULT_USE_CACHE': 'default',  #缓存的存储方式，与配置文件中的CACHES的键对应。
 }
+
 
 # Redis作为Cache配置
 CACHES = {
@@ -242,6 +245,7 @@ CACHES = {
     }
 }
 
+
 # 配置sentry
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -250,6 +254,7 @@ from sentry_sdk.integrations.django import DjangoIntegration
 #     dsn="https://7c8deea890d846549ecf814e8eb88292@sentry.io/1457559",
 #     integrations=[DjangoIntegration()]
 # )
+
 
 
 # 163邮箱配置
