@@ -39,3 +39,17 @@
 将删除 apps/xadmin/templatetags/__pycache__/
 将删除 apps/xadmin/views/__pycache__/
 将删除 utils/__pycache__/
+将删除 apps/info/migrations/0009_auto_20190510_2200.py
+将删除 apps/info/migrations/0010_auto_20190510_2202.py
+将删除 apps/info/migrations/0011_auto_20190512_1631.py
+将删除 apps/teams/migrations/0003_teamprofile_team_token.py
+将删除 apps/teams/migrations/0004_auto_20190514_0950.py
+将删除 apps/teams/migrations/0005_auto_20190514_0956.py
+将删除 apps/users/migrations/0002_auto_20190513_1136.py
+将删除 apps/users/migrations/0003_auto_20190513_1530.py
+将删除 apps/users/migrations/0004_auto_20190516_1513.py
+将删除 celery_tasks/__pycache__/
+将删除 logs/
+将删除 media/avatar/2019/05/
+将删除 media/upload/
+将删除 test/

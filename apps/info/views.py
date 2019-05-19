@@ -144,7 +144,26 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.
             return CtfSubmitAddSerializer
         return CtfSubmitDetailSerializer
 
+    def get_real_score(self, score, times):
+        '''
+        定义降分策略
+        :param score:
+        :param times:
+        :return:
+        '''
+        if times <= 3:
+            return score
+        else:
+            lowest_score = score / 2
+            _ = int((score - lowest_score) / 10)
+
+            final_score = score - (times - 3) * _
+            if final_score < lowest_score:
+                final_score = lowest_score
+            return final_score
+
     def perform_create(self, serializer):
+
         submit = serializer.save()
 
         if submit.submit_result == True:
@@ -153,15 +172,21 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.
                 | Q(team_member3=submit.user))
             ctf_competition_table = CtfCompetitionTable.objects.get(
                 Q(ctf=submit.ctf) & Q(competition=submit.competition))
+            times = ctf_competition_table.submit_times
+            score = ctf_competition_table.ctf.ctf_score
+            final_score = self.get_real_score(score=score, times=times)
+
             ctf_competition_table.submit_times += 1
             ctf_competition_table.save()
+
             team_competition_info = TeamCompetitionInfo.objects.get(Q(competition=submit.competition) & Q(team=team))
-            team_competition_info.score_all += submit.ctf.ctf_score
-            team_competition_info.score_ctf += submit.ctf.ctf_score
+            team_competition_info.score_all += final_score
+            team_competition_info.score_ctf += final_score
             team_competition_info.save()
+
             user_competition_info = UserCompetitionInfo.objects.get(Q(competition=submit.competition) & Q(team=team))
-            user_competition_info.score_ctf += submit.ctf.ctf_score
-            user_competition_info.score_all += submit.ctf.ctf_score
+            user_competition_info.score_ctf += final_score
+            user_competition_info.score_all += final_score
             user_competition_info.save()
         return submit
 
@@ -256,5 +281,3 @@ class UserChoiceInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mi
         UserChoiceIn.score = score
 
         return serializer.save()
-    # def get_object(self):
-    #     return self.request.user
