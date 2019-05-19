@@ -2,7 +2,7 @@
 基于Django框架开发，同时kvm虚拟化和SDN技术的使用带给了使用者强大的靶机攻防体验。开发目的即一款优秀的专用于比赛的CTF平台，它丰富的比赛内容，灵活的比赛模式以及各项人性化的功能模块满足了比赛举办者的所有要求。然而，同时并不局限于比赛的用途，使用者同样可以用来练习CTF解题和靶机攻防。
 ## 技术栈
 
-python3.7 + Django 2.1.7 + 10.3.9-MariaDB + REST Framework 3.9.2 + xadmin + Celery + Vue
+python3.7 + Django 2.1.7 + 10.3.9-MariaDB or Mysql-8.0 + REST Framework 3.9.2 + xadmin + Celery + Vue
 
 
 
@@ -67,4 +67,8 @@ CORS实现：django-cors-headers
 1. 注册验证码逻辑验证 -ok
 2. 
 
+## 附加工具
+redis监控： http://www.treesoft.cn/dms.html
+
+sentry: https://github.com/getsentry/sentry
 

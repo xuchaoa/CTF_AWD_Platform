@@ -57,12 +57,14 @@ INSTALLED_APPS = [
     'choice.apps.ChoiceConfig',
     'notice.apps.NoticeConfig',
     'django_filters',
+    'corsheaders',
 
 ]
 
 
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -71,6 +73,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'CTF_AWD_Platform.urls'
 
@@ -181,12 +185,19 @@ REST_FRAMEWORK = {
         # 'rest_framework.authentication.SessionAuthentication',    #sessionid验证方式
         # 'rest_framework.authentication.BasicAuthentication',  #账号密码验证方式
     ),
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.ScopedRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'CtfSubmit': '12/min',
+        'uploads': '20/day'
+    }
 }
 
 
 
 AUTHENTICATION_BACKENDS = (
-    'users.views.UserCustomBackend',
+    'utils.CustomBackend.UserCustomBackend',
 )
 
 ## JWT conf
@@ -196,7 +207,7 @@ AUTHENTICATION_BACKENDS = (
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=3),   #有效期180分钟
     #定义与令牌一起发送的Authorization标头值前缀
-    'JWT_AUTH_HEADER_PREFIX': 'JWT',
+    'JWT_AUTH_HEADER_PREFIX': 'SDUT',
     'JWT_AUTH_COOKIE': None,
     'JWT_ALGORITHM': 'HS256',
     'JWT_ALLOW_REFRESH': True,   #允许刷新
@@ -210,3 +221,47 @@ JWT_AUTH = {
 
 # 手机号码正则表达式
 REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"
+#邮箱正则表达式
+REGEX_EMAIL = "^[a-z0-9A-Z]+[- | a-z0-9A-Z . _]+@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-z]{2,}$"
+
+#Cache缓存配置
+REST_FRAMEWORK_EXTENSIONS = {
+    'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60*5, #五分钟
+    'DEFAULT_USE_CACHE': 'default',  #缓存的存储方式，与配置文件中的CACHES的键对应。
+}
+
+# Redis作为Cache配置
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://:SDUTctf@10.6.65.231:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+# 配置sentry
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+# sentry_sdk.init(
+#     dsn="https://7c8deea890d846549ecf814e8eb88292@sentry.io/1457559",
+#     integrations=[DjangoIntegration()]
+# )
+
+
+# 163邮箱配置
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 25
+#发送邮件的邮箱
+EMAIL_HOST_USER = '15615833854@163.com'
+#客户端授权密码
+EMAIL_HOST_PASSWORD = 'sdutseclab507'
+#收件人看到的发件人信息
+EMAIL_FROM = 'SDUTCTF2019<15615833854@163.com>'
+EMAIL_USE_TLS = False
+
+

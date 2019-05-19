@@ -11,8 +11,8 @@ class SendSMS(object):
     def __init__(self):
         self.ACCOUNT_SID = '8a216da86a2a8174016a39f0748d09ec'
         self.AUTH_TOKEN = 'dd49474506d14a07b5acffdf0468c44f'
-        self.serverIP='app.cloopen.com';
-        self.serverPort='8883';
+        self.serverIP='app.cloopen.com'
+        self.serverPort='8883'
         self.softVersion='2013-12-26'
         self.appId = '8a216da86a2a8174016a39f074e809f3'
     def SendSms(self,to,data,tempId):

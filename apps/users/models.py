@@ -25,7 +25,7 @@ class UserProfile(AbstractUser):
     # user_password = models.CharField(max_length=50, null=False, blank=True, verbose_name="密码")
     user_school = models.CharField(max_length=30, null=True, blank=True, verbose_name="学校",help_text='学校')
     user_major = models.CharField(max_length=30, null=True, blank=True, verbose_name="专业班级",help_text='专业班级')
-    user_phone = models.CharField(max_length=11, null=True, blank=True,unique=True, verbose_name="手机")
+    user_phone = models.CharField(max_length=11, null=True, blank=True,unique=True, verbose_name="手机",help_text='手机')
     user_number = models.CharField(max_length=11,null=True,blank=True,unique=True,verbose_name='学号',help_text='学号')
     # user_email = models.CharField(max_length=30,null=True,blank=True,unique=True,verbose_name='邮箱')
     user_image = models.ImageField(upload_to='avatar/%Y/%m/%d',verbose_name='头像',blank=True)
@@ -50,10 +50,11 @@ class UserProfile(AbstractUser):
 
 class VerifyCode(models.Model):
     """
-    短信验证码
+    验证码
     """
     code = models.CharField(max_length=10, verbose_name="验证码")
-    mobile = models.CharField(max_length=11, verbose_name="电话")
+    mobile = models.CharField(max_length=30, verbose_name="电话或邮箱")
+    type = models.CharField(default='mobile',max_length=25,verbose_name='类型')
     add_time = models.DateTimeField(default=timezone.now, verbose_name="添加时间")
 
     class Meta:
@@ -69,11 +70,11 @@ class UserLoginLog(models.Model):
     user_login_time = models.DateTimeField(default=timezone.now,verbose_name='登陆时间')
     user_login_ip = models.CharField(max_length=15,verbose_name='登陆ip')
     user_login_agent = models.CharField(max_length=200,verbose_name='UA')
-    user_login_os = models.CharField(max_length=50,verbose_name='OS')
+    user_login_os = models.CharField(max_length=100,verbose_name='OS')
 
     class Meta:
-        verbose_name = '用户登录日志'
+        verbose_name = '登录日志'
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return '%s(%s)'(self.user.username,self.user_login_ip)
+        return '{}.{}'.format(self.user.username,self.user_login_ip)

@@ -29,6 +29,11 @@ class TeamCompetitionInfo(models.Model):
     def __str__(self):
         return str(self.id)
 
+from CTF_AWD_Platform.settings import MEDIA_ROOT
+
+def upload_to(instance,filename):
+    return '/'.join([MEDIA_ROOT+'/upload/wp_upload',instance.competition.competition_name,instance.team.team_name,instance.user.username,filename])
+
 
 class UserCompetitionInfo(models.Model):
     '''
@@ -41,6 +46,7 @@ class UserCompetitionInfo(models.Model):
     score_choice = models.IntegerField(default=0, verbose_name="选择题分数")
     score_ctf = models.IntegerField(default=0, verbose_name="ctf总分")
     score_awd = models.IntegerField(default=0, verbose_name="awd总分")
+    wp = models.FileField(null=True,blank=True,upload_to=upload_to)
 
     class Meta:
         verbose_name = '个人比赛详情'
@@ -77,7 +83,7 @@ class Illegality(models.Model):
         unique_together = ('user', 'team', 'competition')
 
     def __str__(self):
-        return str(self.id)
+        return self.user.username
 
 
 class CtfCompetitionTable(models.Model):
@@ -89,7 +95,7 @@ class CtfCompetitionTable(models.Model):
     submit_times = models.IntegerField(default=0, verbose_name='正确提交次数')
 
     class Meta:
-        verbose_name = '比赛题目'
+        verbose_name = '比赛CTF题目'
         verbose_name_plural = verbose_name
         unique_together = ('ctf', 'competition')
     def __str__(self):
@@ -114,6 +120,7 @@ class CtfSubmit(models.Model):
 
 
 
+
 class AwdSubmit(models.Model):
     '''
     AWD攻防提交flag表
@@ -133,23 +140,9 @@ class AwdSubmit(models.Model):
         unique_together = ('team', 'competition')
 
 
-class CompetitionChoice(models.Model):
+class CompetitionChoiceSubmit(models.Model):
     '''
-    选择题抽取题目
-    '''
-    competition_choice_id = models.ForeignKey(ChoiceLibrary, on_delete=models.CASCADE, verbose_name="选择题ID",
-                                              related_name="choice_1")
-    competition_id = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, related_name="competition_1")
-
-    class Meta:
-        verbose_name = '选择题抽取题目'
-        verbose_name_plural = verbose_name
-        unique_together = ('competition_choice_id', 'competition_id')
-
-
-class ChoiceResult(models.Model):
-    '''
-    选择题选项
+    选择题抽取题目&提交记录
     '''
     result_choice = (
         (0, 'A'),
@@ -157,10 +150,41 @@ class ChoiceResult(models.Model):
         (2, 'C'),
         (3, 'D')
     )
-    choice_result_id = models.ForeignKey(CompetitionChoice, on_delete=models.CASCADE, verbose_name="选择题ID",
-                                         related_name="competition_choice_idd")
-    choice_result_result = models.SmallIntegerField(choices=result_choice, verbose_name="选择答案")
+    competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, related_name="competition_choice",default=None)
+    team = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name='队伍',default=None)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='user_choice_submit', default=None)
+    choice = models.ForeignKey(ChoiceLibrary, on_delete=models.CASCADE, verbose_name="选择题ID",
+                               related_name="choice_choice",default=None)
+    score = models.IntegerField()
+    true_result = models.SmallIntegerField(choices=result_choice,verbose_name='正确答案')
+    submit_result = models.SmallIntegerField(choices=result_choice,null=True,blank=True,verbose_name='提交的答案')
+    result = models.BooleanField(null=True,blank=True,verbose_name='答案是否正确')
+
+    def __str__(self):
+        return '{}.{}.{}'.format(self.competition,self.team,self.user)
 
     class Meta:
-        verbose_name = '选择题选项'
+        verbose_name = '比赛选择题题目及提交状况'
         verbose_name_plural = verbose_name
+        unique_together = ('competition','team','user', 'choice')
+
+
+class UserChoiceInfo(models.Model):
+    '''
+    用户选择题情况表
+    '''
+    user = models.ForeignKey(UserProfile,on_delete=models.CASCADE,related_name='user_choice_1',default=None)
+    team = models.ForeignKey(TeamProfile,on_delete=models.CASCADE,related_name='team_choice_1',default=None)
+    competition = models.ForeignKey(CompetitionProfile,on_delete=models.CASCADE,related_name='competition_choice_info',default=None)
+    submit_status = models.NullBooleanField(default=None)  #默认为NULL
+    score = models.IntegerField(default=0)
+
+    def __str__(self):
+        return "{}.{}".format(self.team,self.user)
+
+    class Meta:
+        verbose_name = '用户选择题情况表'
+        verbose_name_plural = verbose_name
+        unique_together = ('user', 'team','competition')
+
+
