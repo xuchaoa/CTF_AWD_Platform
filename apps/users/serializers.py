@@ -124,8 +124,8 @@ class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'username', 'user_phone', 'user_gender', 'user_number', 'email', 'user_school', 'user_major', 'user_url',
-            'user_image', 'user_registertime')
+            'id','username', 'user_phone', 'user_gender', 'user_number', 'email', 'user_school', 'user_major', 'user_url',
+            'user_image', 'last_login','user_registertime')
 
 
 class SmsSerializer(serializers.Serializer):

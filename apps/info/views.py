@@ -163,7 +163,7 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.
             return final_score
 
     def perform_create(self, serializer):
-        
+
         submit = serializer.save()
 
         if submit.submit_result == True:
