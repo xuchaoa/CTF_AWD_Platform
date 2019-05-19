@@ -281,5 +281,3 @@ class UserChoiceInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mi
         UserChoiceIn.score = score
 
         return serializer.save()
-    # def get_object(self):
-    #     return self.request.user

@@ -4,7 +4,7 @@ from . import models
 
 class NoticeDisplay(object):
     '''显示的字段'''
-    list_display = ['notice_competition', 'notice_content', 'notice_time']
+    list_display = ['notice_competition', 'notice_title', 'notice_content', 'notice_time']
     '''被检索的字段'''
     search_fields = ['notice_competition__competition_name', 'notice_content']
     '''设置过滤选项'''

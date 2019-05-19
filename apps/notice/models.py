@@ -10,7 +10,8 @@ class NoticeProfile(models.Model):
     公告
     '''
     notice_time = models.DateTimeField(default=timezone.now, null=True, verbose_name="公告时间")
-    notice_content = models.CharField(max_length=255, null=True, verbose_name="公告内容")
+    notice_title = models.TextField(null=True, verbose_name="公告题目")
+    notice_content = models.TextField(null=True, verbose_name="公告内容")
     notice_competition = models.ForeignKey(CompetitionProfile, null=True, on_delete=models.CASCADE, verbose_name="比赛名称",
                                            related_name='competition_name1')
 
