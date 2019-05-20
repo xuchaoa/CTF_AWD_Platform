@@ -185,9 +185,10 @@ class EmailCodeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         }, status=status.HTTP_201_CREATED)
 
 
+# class UserLogViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 class UserLogViewSet(viewsets.ModelViewSet):
     '''
-    增加：不开放api
+    增加：开放api
     删除：不开放api
     修改：不开放api
     查询：只能查询当前用户
@@ -198,6 +199,7 @@ class UserLogViewSet(viewsets.ModelViewSet):
     serializer_class = LogSerializer
 
     def get_queryset(self):
+
         return UserLoginLog.objects.filter(user=self.request.user)
 
     # 获取OS
@@ -216,9 +218,7 @@ class UserLogViewSet(viewsets.ModelViewSet):
     def get_ua(self, request):
         ua_string = request.META.get('HTTP_USER_AGENT', '')
         # 解析为user_agent
-        print(ua_string)
         user_agent = user_agents.parse(ua_string)
-        print("1111s")
         # 判断浏览器
         bw = user_agent.browser.family
         # 判断操作系统

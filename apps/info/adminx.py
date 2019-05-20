@@ -41,10 +41,10 @@ xadmin.site.register(models.UserCompetitionInfo, UserCompetitionInfoDisplay)
 
 
 class IllegalityDisplay(object):
-    list_display = ['competition', 'team', 'user', 'illegality_time', 'illegality_action', 'illegality_timea',
+    list_display = ['competition', 'team', 'user', 'illegality_time', 'illegality_action', 'illegality_times',
                     'illegality_duration', 'illegality_starttime', 'illegality_endtime', 'duration_status']
     search_fields = ['team__team_name', 'user__username', 'competition__competition_name']
-    list_filter = ['competition', 'team', 'user', 'illegality_time', 'illegality_action', 'illegality_timea',
+    list_filter = ['competition', 'team', 'user', 'illegality_time', 'illegality_action', 'illegality_times',
                    'illegality_duration', 'illegality_starttime', 'illegality_endtime', 'duration_status']
     list_per_page = 10
     ordering = ['id']

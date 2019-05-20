@@ -21,12 +21,17 @@ class TeamDetailSerializer(serializers.ModelSerializer):
 
     competition = CompetitionSerializer()
 
+    def validate(self, attrs):
+        return attrs
+
     class Meta:
         model = TeamProfile
         fields = '__all__'
 
 
 class CurrentUserIdDefault(serializers.CurrentUserDefault):
+
+
     def set_context(self, serializer_field):
         self.user_id = serializer_field.context['request'].user.id
 

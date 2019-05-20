@@ -14,8 +14,8 @@ class TeamCompetitionInfo(models.Model):
     '''
     队伍比赛团队得分表
     '''
-    team = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name='队伍')
-    competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛')
+    team = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name='队伍',default=None)
+    competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛',default=None)
     score_all = models.IntegerField(default=0, verbose_name="队伍总得分")
     score_choice = models.IntegerField(default=0, verbose_name="选择题得分")
     score_ctf = models.IntegerField(default=0, verbose_name="ctf分数")
@@ -39,8 +39,8 @@ class UserCompetitionInfo(models.Model):
     '''
     团队比赛个人得分表
     '''
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='队员',related_name='user_info')
-    team = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name='队伍')
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='队员',related_name='user_info',default=None)
+    team = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name='队伍',default=None)
     competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛',related_name='user_competition')
     score_all = models.IntegerField(default=0, verbose_name="个人总分")
     score_choice = models.IntegerField(default=0, verbose_name="选择题分数")
@@ -69,10 +69,10 @@ class Illegality(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='队员')
     team = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name='队伍')
     competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛')
-    illegality_time = models.DateTimeField(default=timezone.now, verbose_name='')
+    illegality_time = models.DateTimeField(default=timezone.now, verbose_name='添加记录的时间')
     illegality_action = models.SmallIntegerField(choices=illegality_type, default=2, verbose_name="行为")
-    illegality_timea = models.IntegerField(verbose_name='违规次数')
-    illegality_duration = models.IntegerField(verbose_name='封禁时间')
+    illegality_times = models.IntegerField(verbose_name='违规次数',default=0)
+    illegality_duration = models.IntegerField(verbose_name='封禁时间(分钟)')
     illegality_starttime = models.DateTimeField(verbose_name='封禁开始时间')
     illegality_endtime = models.DateTimeField(verbose_name='封禁结束时间')
     duration_status = models.BooleanField(verbose_name='封禁状态')
@@ -90,8 +90,8 @@ class CtfCompetitionTable(models.Model):
     '''
     每场比赛的CTF题目,包括提交次数字段
     '''
-    ctf = models.ForeignKey(CtfLibrary, on_delete=models.CASCADE, verbose_name='题目编号')
-    competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛编号')
+    ctf = models.ForeignKey(CtfLibrary, on_delete=models.CASCADE, verbose_name='题目编号',default=None)
+    competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛编号',default=None)
     submit_times = models.IntegerField(default=0, verbose_name='正确提交次数')
 
     class Meta:
@@ -106,9 +106,9 @@ class CtfSubmit(models.Model):
     '''
     CTF提交flag表
     '''
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='队员')
-    competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛')
-    ctf = models.ForeignKey(CtfLibrary, on_delete=models.CASCADE, verbose_name="提交题目")
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='队员',default=None)
+    competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛',default=None)
+    ctf = models.ForeignKey(CtfLibrary, on_delete=models.CASCADE, verbose_name="提交题目",default=None)
     submit_time = models.DateTimeField(default=timezone.now, verbose_name="提交时间")
     submit_flag = models.CharField(max_length=255, verbose_name="提交flag")
     submit_result = models.BooleanField(verbose_name="判定结果")
@@ -125,12 +125,12 @@ class AwdSubmit(models.Model):
     '''
     AWD攻防提交flag表
     '''
-    team = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name='队伍')
+    team = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name='队伍',default=None)
     competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛',
-                                    related_name="competition_id")
+                                    related_name="competition_id",default=None)
     awd_submit_time = models.DateTimeField(default=timezone.now, verbose_name="提交时间")
-    awd_submit_teamid = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name="目标队伍编号",
-                                          related_name="team_id")
+    awd_submit_team = models.ForeignKey(TeamProfile, on_delete=models.CASCADE, verbose_name="目标队伍编号",
+                                          related_name="team_id",default=None)
     awd_submit_flag = models.CharField(max_length=255, verbose_name="提交flag")
     awd_submit_result = models.BooleanField(verbose_name="判定结果")
 
