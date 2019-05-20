@@ -22,6 +22,7 @@ class TeamCompetitionInfo(models.Model):
     score_awd = models.IntegerField(default=0, verbose_name="awd分数")
 
     class Meta:
+        ordering = ['-score_all']
         verbose_name = '团队比赛详情'
         verbose_name_plural = verbose_name
         unique_together = ('team', 'competition')  # 多个字段作为一个联合唯一索引
