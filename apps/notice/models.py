@@ -16,6 +16,7 @@ class NoticeProfile(models.Model):
                                            related_name='competition_name1')
 
     class Meta:
+        ordering = ['-notice_time']
         verbose_name = '比赛公告'
         verbose_name_plural = verbose_name
 
