@@ -116,6 +116,15 @@ class UserRegSerializer(serializers.ModelSerializer):
         fields = ("user_phone","code", "password", "email_or_mobile", "username", "email", )  # DRF web表单显示字段
 
 
+class UserUpdateSerializer(serializers.ModelSerializer):
+    '''
+    注册完后完善信息
+    '''
+
+    class Meta:
+        model = User
+        fields = ("username", "user_gender", "user_school", "user_major", "user_phone", "user_number","user_image","user_url")  # DRF web表单显示字段
+
 class UserDetailSerializer(serializers.ModelSerializer):
     '''
     用户详情序列化

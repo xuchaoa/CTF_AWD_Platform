@@ -3,7 +3,8 @@ from django.shortcuts import render
 # Create your views here.
 
 
-from .serializers import UserRegSerializer, SmsSerializer, UserDetailSerializer, LogSerializer, EmailSerializer
+from .serializers import UserRegSerializer, SmsSerializer, UserDetailSerializer, LogSerializer, EmailSerializer, \
+    UserUpdateSerializer
 from .models import UserProfile, VerifyCode, UserLoginLog
 from rest_framework import mixins, generics, permissions
 from rest_framework import viewsets
@@ -50,7 +51,8 @@ from django.contrib.auth import get_user_model
 User = get_user_model()  # 获取setting.py中AUTH_USER_MODEL指定的User model
 
 
-class UserViewset(mixins.UpdateModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+class UserViewset(mixins.UpdateModelMixin, mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.ListModelMixin,
+                  viewsets.GenericViewSet):
     '''
     User
     增加：
@@ -89,7 +91,7 @@ class UserViewset(mixins.UpdateModelMixin, mixins.CreateModelMixin, mixins.Retri
 
     def get_serializer_class(self):
         if self.action == 'update':  # 可能重置密码
-            return UserRegSerializer
+            return UserUpdateSerializer
         elif self.action == 'retrieve':
             return UserDetailSerializer
         elif self.action == 'create':
@@ -136,18 +138,16 @@ class SmsCodeViewset(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
         mobile = serializer.validated_data["mobile"]
 
-
         code = self.generate_code()
         data = [code, '5']  # 验证码在五分钟后失效
 
         SendCode.SendSMS.delay(to=mobile, data=data, tempId=1)
 
-
         code_record = VerifyCode(code=code, mobile=mobile, type='mobile')
         code_record.save()
         return Response({
-                "mobile": mobile
-            }, status=status.HTTP_201_CREATED)
+            "mobile": mobile
+        }, status=status.HTTP_201_CREATED)
 
 
 from utils.Email import SendMail
@@ -181,9 +181,8 @@ class EmailCodeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         code_record = VerifyCode(code=code, mobile=mobile, type='email')
         code_record.save()
         return Response({
-                "mobile": mobile
-            }, status=status.HTTP_201_CREATED)
-
+            "mobile": mobile
+        }, status=status.HTTP_201_CREATED)
 
 
 class UserLogViewSet(viewsets.ModelViewSet):
@@ -201,7 +200,6 @@ class UserLogViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return UserLoginLog.objects.filter(user=self.request.user)
 
-
     # 获取OS
     def get_os(self, request):
         return platform.platform(request)
@@ -214,7 +212,7 @@ class UserLogViewSet(viewsets.ModelViewSet):
             ip = request.META['REMOTE_ADDR']
         return ip
 
-    #获取user-agent
+    # 获取user-agent
     def get_ua(self, request):
         ua_string = request.META.get('HTTP_USER_AGENT', '')
         # 解析为user_agent
