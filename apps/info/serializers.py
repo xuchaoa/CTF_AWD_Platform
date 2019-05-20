@@ -8,7 +8,12 @@ from django.forms.models import model_to_dict
 from django.db.models import Q
 from .models import Illegality, UserCompetitionInfo, TeamCompetitionInfo,CompetitionChoiceSubmit,UserChoiceInfo
 from choice.serializers import ChoiceSerializer
-
+from hashlib import md5
+from rest_framework.exceptions import APIException
+from django.utils.translation import ugettext_lazy as _
+from django.http import JsonResponse
+from utils.CompetitionLimited import CompetitionIsStarted
+from competition.models import CompetitionProfile
 
 class TeamCompetitionInfoSerializer(serializers.ModelSerializer):
 
@@ -98,11 +103,15 @@ class CtfSubmitAddSerializer(serializers.ModelSerializer):
     submit_result = serializers.BooleanField(default=False,read_only=True)
 
 
-
     def validate(self, attrs):
+        CompetitionIsStarted(attrs['competition'])
         if CtfSubmit.objects.filter(Q(user=attrs['user']) & Q(ctf=attrs['ctf']) & Q(submit_result=True)).exists():
-            raise serializers.ValidationError('已提交过正确的flag')
+            raise serializers.ValidationError({'401':'已提交过正确的flag'})
         flag = attrs['ctf'].ctf_flag
+        jwt = self._context['request'].auth
+        jwt = jwt.decode()
+        _ = jwt.split(".")[2]
+        flag = md5((flag + _).encode()).hexdigest()
         if flag == attrs['submit_flag']:
             attrs['submit_result'] = True
         else:
@@ -119,6 +128,7 @@ class CtfSubmitDetailSerializer(serializers.ModelSerializer):
     1.隐藏敏感flag字段 --> ok
     2.比赛结束不做限制 ok
     '''
+
     class Meta:
         model = CtfSubmit
         fields = ('id','user','competition','ctf','submit_time','submit_result')
@@ -126,6 +136,7 @@ class CtfSubmitDetailSerializer(serializers.ModelSerializer):
 class CompetitionChoiceDetailSerializer(serializers.ModelSerializer):
     # is_start = serializers.IntegerField
     choice = ChoiceSerializer()
+
     class Meta:
         model = CompetitionChoiceSubmit
         fields = ('id','choice','score','submit_result','user')
@@ -134,6 +145,11 @@ class CompetitionChoiceUpdateSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
     )
+
+    def validate(self, attrs):
+        CompetitionIsStarted(self.instance.competition)
+        return attrs
+
     class Meta:
         model = CompetitionChoiceSubmit
         fields = ('id','submit_result','user')
@@ -181,12 +197,20 @@ class UserChoiceInfoAddSerializer(serializers.ModelSerializer):
 
 
     def validate(self, attrs):
+        CompetitionIsStarted(attrs['competition'])
         attrs['submit_status'] = 0
         return attrs
 
     class Meta:
         model = UserChoiceInfo
         fields = "__all__"
+
+
+
+class HaveSubmitedFlag(APIException):
+    status_code = 461
+    default_detail = _('Incorrect authentication credentials.')
+    default_code = 'authentication_failed'
 
 class UserChoiceInfoUpdateSerializer(serializers.ModelSerializer):
     '''
@@ -203,9 +227,10 @@ class UserChoiceInfoUpdateSerializer(serializers.ModelSerializer):
         elif current_submit_status == None:
             raise serializers.ValidationError('未获取题目，不能提交')
         if current_submit_status == 1:
-            raise serializers.ValidationError('已经提交题目，不必重复提交')
-
+            raise serializers.ValidationError(detail='已经提交题目，不必重复提交',code=461)
+            # raise HaveSubmitedFlag()
     def validate(self, attrs):
+        CompetitionIsStarted(self.instance.competition)
         attrs['submit_status'] = 1
         return attrs
 

@@ -126,7 +126,7 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.
     ctf提交记录
 
     增加： Auth并且参加了该比赛  ok
-    并且在比赛时间内 TODO this
+    并且在比赛时间内 ok
     修改相应表格： CtfCompetitionTable  ok   TeamCompetitionInfo  ok
     删除： None
     修改： None
@@ -134,11 +134,15 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.
     提交flag后不返回前端  -->  ok
     '''
     throttle_scope = 'CtfSubmit'
-    queryset = CtfSubmit.objects.all()
+
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
 
     # serializer_class = CtfSubmitSerializer
+
+    def get_queryset(self):
+        return CtfSubmit.objects.all()
+
     def get_serializer_class(self):
         if self.action == 'create':
             return CtfSubmitAddSerializer
@@ -242,16 +246,12 @@ class UserChoiceInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mi
         competition = UserChoiceIn.competition
         team = UserChoiceIn.team
         user = UserChoiceIn.user
-        choice_library_num = ChoiceLibrary.objects.count()
+        choice_library = ChoiceLibrary.objects.all()
         choice_num = competition.competition_choicenum
-        choice_id = []
-        while(len(choice_id) < choice_num):
-            x = random.randint(1,choice_library_num)
-            if x not in choice_id:
-                choice_id.append(x)
-        choice = []
-        for i in choice_id:
-            choice.append(ChoiceLibrary.objects.get(id=i))
+
+
+        choice = random.sample(list(choice_library),choice_num)
+
         for i in choice:
             _ = CompetitionChoiceSubmit()
             _.competition = competition
