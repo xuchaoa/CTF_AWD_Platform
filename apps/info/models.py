@@ -81,7 +81,6 @@ class Illegality(models.Model):
     class Meta:
         verbose_name = '比赛违规'
         verbose_name_plural = verbose_name
-        unique_together = ('user', 'team', 'competition')
 
     def __str__(self):
         return self.user.username

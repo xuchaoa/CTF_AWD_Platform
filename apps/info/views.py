@@ -94,7 +94,9 @@ class CtfSubmitPermission(permissions.BasePermission):
         '''
         return False
 
-
+from utils.IllegalityLimited import limited
+from rest_framework.response import Response
+from rest_framework import status
 class CtfCompetitionTableViewSet(CacheResponseMixin,mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     '''
     每场比赛ctf题目
@@ -111,6 +113,7 @@ class CtfCompetitionTableViewSet(CacheResponseMixin,mixins.ListModelMixin, mixin
     serializer_class = CtfCompetitionTableSerializer
 
     def get_queryset(self):
+
         team = TeamProfile.objects.filter(
             Q(team_captain=self.request.user) | Q(team_member1=self.request.user) | Q(
                 team_member2=self.request.user) | Q(

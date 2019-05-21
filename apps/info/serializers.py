@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.http import JsonResponse
 from utils.CompetitionLimited import CompetitionIsStarted
 from competition.models import CompetitionProfile
+from utils.IllegalityLimited import limited
 
 class TeamCompetitionInfoSerializer(serializers.ModelSerializer):
 
@@ -105,10 +106,12 @@ class CtfSubmitAddSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         CompetitionIsStarted(attrs['competition'])
+        limited(attrs['user'])
         if CtfSubmit.objects.filter(Q(user=attrs['user']) & Q(ctf=attrs['ctf']) & Q(submit_result=True)).exists():
             raise serializers.ValidationError({'401':'已提交过正确的flag'})
         flag = attrs['ctf'].ctf_flag
         jwt = self._context['request'].auth
+        ## 在调试界面会出现NoneType情况,直接用postman调试
         jwt = jwt.decode()
         _ = jwt.split(".")[2]
         flag = md5((flag + _).encode()).hexdigest()
