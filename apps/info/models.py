@@ -72,7 +72,7 @@ class Illegality(models.Model):
     competition = models.ForeignKey(CompetitionProfile, on_delete=models.CASCADE, verbose_name='比赛')
     illegality_time = models.DateTimeField(default=timezone.now, verbose_name='添加记录的时间')
     illegality_action = models.SmallIntegerField(choices=illegality_type, default=2, verbose_name="行为")
-    illegality_times = models.IntegerField(verbose_name='违规次数',default=0)
+    illegality_times = models.IntegerField(verbose_name='违规次数',default=1)
     illegality_duration = models.IntegerField(verbose_name='封禁时间(分钟)')
     illegality_starttime = models.DateTimeField(verbose_name='封禁开始时间')
     illegality_endtime = models.DateTimeField(verbose_name='封禁结束时间')

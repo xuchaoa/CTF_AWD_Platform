@@ -20,7 +20,8 @@ from rest_framework import serializers
 
 
 def limited(user=None):
-    illegality = Illegality.objects.filter(user=user)
+    illegality = Illegality.objects.filter(user=user,duration_status=True).order_by("-illegality_endtime")
+
     if illegality is not None and illegality[0].duration_status:
         illegality = illegality[0]
         start_time = illegality.illegality_starttime
