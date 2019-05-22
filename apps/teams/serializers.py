@@ -12,6 +12,7 @@ from random import choice
 from django.db.models import Q
 from rest_framework import status
 from rest_framework.response import Response
+from users.serializers import UserDetailSerializer
 
 
 class TeamDetailSerializer(serializers.ModelSerializer):
@@ -20,6 +21,10 @@ class TeamDetailSerializer(serializers.ModelSerializer):
     '''
 
     competition = CompetitionSerializer()
+    team_captain = UserDetailSerializer()
+    team_member1 = UserDetailSerializer()
+    team_member2 = UserDetailSerializer()
+    team_member3 = UserDetailSerializer()
 
     def validate(self, attrs):
         return attrs

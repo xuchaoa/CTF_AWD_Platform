@@ -24,7 +24,7 @@ from info.models import Illegality
 import time
 import datetime
 
-ban_ua_0 = ['nmap','w3af','netsparker','nikto','fimap','acunetix','appscan','nessus','sqlmap']
+ban_ua_0 = ['nmap','w3af','netsparker','nikto','fimap','acunetix','appscan','nessus','sqlmap','rsas']
 ban_ua_1 = ['wget','python']
 ban_ua_2 = []
 
