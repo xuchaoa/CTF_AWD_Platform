@@ -250,10 +250,10 @@ CACHES = {
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
-# sentry_sdk.init(
-#     dsn="https://7c8deea890d846549ecf814e8eb88292@sentry.io/1457559",
-#     integrations=[DjangoIntegration()]
-# )
+sentry_sdk.init(
+    dsn="http://cba487c614b843a5a35aea062d13e96b:2c848533b72747efa7f26504f64fd08e@10.6.65.231:9000/3",
+    integrations=[DjangoIntegration()]
+)
 
 
 

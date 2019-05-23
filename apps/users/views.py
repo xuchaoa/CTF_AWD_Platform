@@ -217,6 +217,8 @@ class UserLogViewSet(viewsets.ModelViewSet):
     # 获取user-agent
     def get_ua(self, request):
         ua_string = request.META.get('HTTP_USER_AGENT', '')
+        if len(ua_string) > 200:
+            ua_string = ua_string[:200]
         # 解析为user_agent
         user_agent = user_agents.parse(ua_string)
         # 判断浏览器
