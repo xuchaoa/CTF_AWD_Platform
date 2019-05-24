@@ -36,7 +36,7 @@ class TeamCompetitionInfoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixi
     删除：不开放api
     更改：不开放api
     查询：任何人都可查看总得分
-    权限控制：不能跨比赛访问 TODO this
+    权限控制：不能跨比赛访问 ok
     '''
     queryset = TeamCompetitionInfo.objects.all()
     serializer_class = TeamCompetitionInfoSerializer

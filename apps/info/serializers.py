@@ -15,8 +15,10 @@ from django.http import JsonResponse
 from utils.CompetitionLimited import CompetitionIsStarted
 from competition.models import CompetitionProfile
 from utils.IllegalityLimited import limited
+from teams.serializers import TeamCompetitionSerializer
 
 class TeamCompetitionInfoSerializer(serializers.ModelSerializer):
+    team = TeamCompetitionSerializer()
 
     class Meta:
         model = TeamCompetitionInfo

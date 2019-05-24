@@ -15,6 +15,7 @@ from competition.models import CompetitionProfile
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import serializers
+from .serializers import TeamUpdateserializer
 
 # Create your views here.
 
@@ -64,7 +65,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             return TeamAddSerializer
             # return TeamAddSerializer
         if self.action == 'update':
-            return TeamAddSerializer
+            return TeamUpdateserializer
         return TeamDetailSerializer
 
     def get_permissions(self):
@@ -94,12 +95,24 @@ class TeamViewSet(viewsets.ModelViewSet):
             UserComInfo.save()
 
     def perform_update(self, serializer):
-        team = serializer.save()
-        if team.competition is not None:
-            TeamComInfo = TeamCompetitionInfo()
-            TeamComInfo.team = team
-            TeamComInfo.competition = team.competition
-            TeamComInfo.save()
+        '''
+        只允许用来删除队员,添加队员未限制
+        注意一次只能删除一个队员
+        :param serializer:
+        :return:
+        '''
+        team = serializer.instance
+        # after_team = serializer.initial_data
+        after_team = serializer.validated_data
+        if team.team_member1 is not None and after_team['team_member1'] is None:
+            user_competition_info = UserCompetitionInfo.objects.filter(user=team.team_member1)
+        elif team.team_member2 is not None and after_team['team_member2'] is None:
+            user_competition_info = UserCompetitionInfo.objects.filter(id=team.team_member2.id)
+        elif team.team_member3 is not None and after_team['team_member3'] is None:
+            user_competition_info = UserCompetitionInfo.objects.filter(user=team.team_member3)
+        print(user_competition_info[0])
+        print(1)
+        return serializer.save()
 
     def perform_destroy(self, instance):
         competition = instance.competition

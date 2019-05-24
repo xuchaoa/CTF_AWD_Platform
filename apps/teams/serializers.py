@@ -34,8 +34,13 @@ class TeamDetailSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class CurrentUserIdDefault(serializers.CurrentUserDefault):
+class TeamCompetitionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeamProfile
+        fields = ("team_name", "team_captain", "team_member1", "team_member2", "team_member3")
 
+
+class CurrentUserIdDefault(serializers.CurrentUserDefault):
 
     def set_context(self, serializer_field):
         self.user_id = serializer_field.context['request'].user.id
@@ -46,7 +51,7 @@ class CurrentUserIdDefault(serializers.CurrentUserDefault):
 
 class TeamAddSerializer(serializers.ModelSerializer):
     '''
-    用于删除用户
+    用于添加用户
     '''
 
     team_captain = serializers.HiddenField(
@@ -56,7 +61,7 @@ class TeamAddSerializer(serializers.ModelSerializer):
     competition = serializers.PrimaryKeyRelatedField(required=True, queryset=CompetitionProfile.objects.all())
     team_token = serializers.CharField(max_length=30, read_only=True)
 
-    def validate_team_captain(self,team_captain):
+    def validate_team_captain(self, team_captain):
         existed = TeamProfile.objects.filter(Q(team_captain=team_captain) | Q(team_member1=team_captain) |
                                              Q(team_member2=team_captain) | Q(team_member3=team_captain))
         if existed:
@@ -82,14 +87,27 @@ class TeamAddSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TeamProfile
-        fields = ("competition", "team_name", "team_token", "team_captain","team_member1","team_member2","team_member3")
+        fields = (
+        "competition", "team_name", "team_token", "team_captain", "team_member1", "team_member2", "team_member3")
+
+
+class TeamUpdateserializer(serializers.ModelSerializer):
+    # def validate(self, attrs):
+    #     token = self.generate_token()
+    #     attrs['team_captain'] = self.context['request'].user
+    #     attrs['team_token'] = token
+    #     return attrs
+
+    class Meta:
+        model = TeamProfile
+        fields = ("team_name", "team_member1", "team_member2", "team_member3")
 
 
 class JoinTeamSerializer(serializers.ModelSerializer):
-    team_token = serializers.CharField(write_only=True,max_length=30,min_length=30,
+    team_token = serializers.CharField(write_only=True, max_length=30, min_length=30,
                                        error_messages={
-                                           'max_length':'token长度错误',
-                                           'min_length':'token长度错误'
+                                           'max_length': 'token长度错误',
+                                           'min_length': 'token长度错误'
                                        })
 
     team_name = serializers.CharField(read_only=True)
@@ -100,6 +118,7 @@ class JoinTeamSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('队伍token错误')
         else:
             pass
+
     def validate_team_member(self, team_member):
         existed = TeamProfile.objects.filter(Q(team_captain=team_member) | Q(team_member1=team_member) |
                                              Q(team_member2=team_member) | Q(team_member3=team_member))
@@ -108,7 +127,6 @@ class JoinTeamSerializer(serializers.ModelSerializer):
         else:
             pass
 
-
     def validate(self, attrs):
         attrs['team_token'] = self.context['request'].data['team_token']
         attrs['team_member'] = self.context['request'].user
@@ -116,13 +134,14 @@ class JoinTeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TeamProfile
-        fields = ("id","team_name","team_token")
+        fields = ("id", "team_name", "team_token")
 
 
 class QuitTeamSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
 
     team_name = serializers.CharField(read_only=True)
+
     def validate_team_member(self, team_member):
 
         existed = TeamProfile.objects.filter(Q(team_captain=team_member) | Q(team_member1=team_member) |
@@ -132,11 +151,10 @@ class QuitTeamSerializer(serializers.ModelSerializer):
         else:
             pass
 
-
     def validate(self, attrs):
         attrs['team_member'] = self.context['request'].user
         return attrs
 
     class Meta:
         model = TeamProfile
-        fields = ("id","team_name")
+        fields = ("id", "team_name")
