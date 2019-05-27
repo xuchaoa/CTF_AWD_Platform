@@ -16,6 +16,7 @@ from utils.CompetitionLimited import CompetitionIsStarted
 from competition.models import CompetitionProfile
 from utils.IllegalityLimited import limited
 from teams.serializers import TeamCompetitionSerializer
+from competition.serializers import CompetitionSerializer
 
 class TeamCompetitionInfoSerializer(serializers.ModelSerializer):
     team = TeamCompetitionSerializer()
@@ -89,7 +90,7 @@ class CurrentCompetitionDefault(serializers.CurrentUserDefault):
 class CtfSubmitAddSerializer(serializers.ModelSerializer):
     '''
     1.需要判断用户时都参加该比赛(不进行判断，后端自动填充)  ok
-    2.是否在比赛时间内 TODO this
+    2.是否在比赛时间内 ok
     3.判断用户提交的flag是否正确  ok 并更改相应表格 ok
     4.已经提交过正确答案则不允许再次提交  ok
     '''
@@ -248,6 +249,7 @@ class UserChoiceInfoDetailSerializer(serializers.ModelSerializer):
     '''
     获取详情时使用
     '''
+    competition = CompetitionSerializer()
     class Meta:
         model = UserChoiceInfo
         fields = "__all__"

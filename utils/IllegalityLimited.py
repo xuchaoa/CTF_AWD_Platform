@@ -22,7 +22,7 @@ from rest_framework import serializers
 def limited(user=None):
     illegality = Illegality.objects.filter(user=user,duration_status=True).order_by("-illegality_endtime")
 
-    if illegality is not None and illegality[0].duration_status:
+    if len(illegality) != 0 and illegality[0].duration_status:
         illegality = illegality[0]
         start_time = illegality.illegality_starttime
         end_time = illegality.illegality_endtime
@@ -37,3 +37,5 @@ def limited(user=None):
             illegality.save()
         else:
             pass
+    else:
+        pass

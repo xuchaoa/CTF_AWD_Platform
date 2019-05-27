@@ -24,6 +24,7 @@ from .serializers import UserCompetitionInfoUpdateSerializer
 from rest_framework import throttling
 
 
+
 class Mythrottle(throttling.BaseThrottle):
     def allow_request(self, request, view):
         return random.randint(1, 10) != 1
@@ -191,7 +192,7 @@ class CtfSubmitViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.
             team_competition_info.score_ctf += final_score
             team_competition_info.save()
 
-            user_competition_info = UserCompetitionInfo.objects.get(Q(competition=submit.competition) & Q(team=team))
+            user_competition_info = UserCompetitionInfo.objects.get(Q(competition=submit.competition) & Q(team=team) & Q(user=submit.user))
             user_competition_info.score_ctf += final_score
             user_competition_info.score_all += final_score
             user_competition_info.save()
