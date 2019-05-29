@@ -12,7 +12,7 @@ class TeamProfile(models.Model):
     '''
     team表
     '''
-    team_name = models.CharField(max_length=50,null=True,blank=False,verbose_name='队伍名称',unique=True)
+    team_name = models.CharField(max_length=50,null=True,blank=True,verbose_name='队伍名称',unique=True)
     team_captain = models.OneToOneField(UserProfile,null=True,blank=True,on_delete=models.CASCADE,related_name='team_captain',verbose_name='队长')
     team_member1 = models.OneToOneField(UserProfile,null=True,blank=True,on_delete=models.SET_NULL,related_name='team_member1',verbose_name='队员1')
     team_member2 = models.OneToOneField(UserProfile,null=True,blank=True,on_delete=models.SET_NULL,related_name='team_member2',verbose_name='队员2')

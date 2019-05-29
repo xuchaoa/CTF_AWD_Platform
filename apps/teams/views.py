@@ -110,8 +110,6 @@ class TeamViewSet(viewsets.ModelViewSet):
             user_competition_info = UserCompetitionInfo.objects.filter(user=team.team_member2)
         elif team.team_member3 is not None and after_team['team_member3'] is None:
             user_competition_info = UserCompetitionInfo.objects.filter(user=team.team_member3)
-        print(user_competition_info[0])
-        print(1)
         return serializer.save()
 
     def perform_destroy(self, instance):
