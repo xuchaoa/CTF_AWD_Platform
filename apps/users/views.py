@@ -199,7 +199,6 @@ class UserLogViewSet(viewsets.ModelViewSet):
     serializer_class = LogSerializer
 
     def get_queryset(self):
-
         return UserLoginLog.objects.filter(user=self.request.user)
 
     # 获取OS

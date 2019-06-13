@@ -11,7 +11,7 @@ import datetime
 
 def CompetitionIsStarted(competiton):
     start_time = competiton.competition_start
-    
+
     end_time = competiton.competition_end
     now = datetime.datetime.now()
     if now < start_time:
