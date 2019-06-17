@@ -201,6 +201,7 @@ class UserLogViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return UserLoginLog.objects.filter(user=self.request.user)
 
+
     # 获取OS
     def get_os(self, request):
         return platform.platform(request)
