@@ -26,9 +26,6 @@ xadmin
 
 dash: https://gitlab.com/k3oni/pydash-django-app/tree/master
 
-## 临时解决方案（待讨论）
-[已解决]无法修改User中基类中username字段的UNIQUE约束  -->>  注册时后台自动生成随机数进行填充
-[已解决]重写django默认认证方法
 
 安全过滤初步想法：通过重载 SessionMiddleware 中间件来实现 或者自定义中间件
 
@@ -67,11 +64,6 @@ CORS实现：django-cors-headers
 ## 安全问题
 
 不得删除username的UNIQUE约束，否则会造成越权
-
-## 测试
-
-1. 注册验证码逻辑验证 -ok
-2. 
 
 ## 附加工具
 redis监控： http://www.treesoft.cn/dms.html
