@@ -1,10 +1,7 @@
 ![](https://img.shields.io/badge/Version-1.0.0-green.svg)
 ![](https://img.shields.io/badge/License-MIT-blue.svg)
-![](https://img.shields.io/badge/Author-SDUTSec-yellow.svg)
-# tips
-最近在准备考试项目搁置了好久,这些只是后端代码,前端现在还在完善一些东西,会在完善后上传.预计在考试完后也就是6.20继续完善.
+![](https://img.shields.io/badge/Author-SDUTSecLab-yellow.svg)
 
-另外急需前端vue的小伙伴(我自己的前端审美有点辣眼睛),有想法的联系我哦...
 
 
 ## 概述
