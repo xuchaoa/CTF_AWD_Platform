@@ -110,8 +110,8 @@ DATABASES = {
         'NAME': 'ctf',
         'USER': 'root',
         'PASSWORD': 'SDUTctf123.',
-        'HOST': '10.6.65.231',
-        'PORT': '3306',
+        'HOST': '127.0.0.1',
+        'PORT': '3307',
         'TEST': {
                 'CHARSET': 'utf8',
                 'COLLATION': 'utf8_general_ci',
@@ -238,7 +238,7 @@ REST_FRAMEWORK_EXTENSIONS = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://:SDUTctf@10.6.65.231:6379/1",
+        "LOCATION": "redis://:SDUTctf@127.0.0.1:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
