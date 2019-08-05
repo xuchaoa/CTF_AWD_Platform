@@ -29,7 +29,7 @@ create database ctf;
 ## docker install redis
 docker pull redis
 
-docker run -d --name myredis -p 6379:6379 redis --requirepass "mypassword"  
+docker run -d --name myredis -p 6379:6379 redis --requirepass "SDUTctf"  
   
 python manage.py makemigrations
 
