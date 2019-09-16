@@ -19,12 +19,17 @@ python3.6 + Django 2.1.7 + 10.3.9-MariaDB or Mysql-8.0 + REST Framework 3.9.2 + 
 安装requirements.txt中的依赖包,如果报下面的错误
 ```
 OSError: mysql_config not found
-sudo apt-get install mysql-server mysql-client
-然后mysql -V查看mysql是否安装成功
-sudo  apt-get install libmysqlclient-dev python3-dev
-然后
-pip install mysqlclient就不会报错找不到'mysql_config'了
 ```
+```cmd
+sudo apt-get install mysql-server mysql-client
+```
+然后mysql -V查看mysql是否安装成功
+```cmd
+sudo  apt-get install libmysqlclient-dev python3-dev
+```
+
+继续`pip install mysqlclient`就不会报错找不到'mysql_config'了
+
     
 ### docker install mysql 8.0 
 ```
@@ -34,13 +39,13 @@ docker pull mysql  #安装mysql 8.0
 docker run -it --rm --name mysql -e MYSQL_ROOT_PASSWORD=SDUTctf123. -p 3306:3306 -d mysql 
 ```
 进入容器
-
+```
 docker exec -it mysql bash 
-
+```
 新建ctf数据库
-
+```
 create database ctf;
-
+```
 ### docker install redis
 ```
 docker pull redis
@@ -105,9 +110,6 @@ CORS实现：django-cors-headers
 
 界面2： 跳转登陆界面后 -> 完善用户名、学号、班级、年级等信息
 
-## 安全问题
-
-不得删除username的UNIQUE约束，否则会造成越权
 
 ## 附加工具
 redis监控： http://www.treesoft.cn/dms.html
