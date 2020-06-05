@@ -3,7 +3,7 @@ certifi==2019.3.9
 chardet==3.0.4
 defusedxml==0.5.0
 diff-match-patch==20181111
-Django==2.1.7
+Django==2.2.13
 django-crispy-forms==1.7.2
 django-filter==2.1.0
 django-formtools==2.1
