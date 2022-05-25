@@ -20,7 +20,7 @@ mysqlclient==1.4.2
 odfpy==1.4.0
 openpyxl==2.6.2
 Pillow==6.0.0
-PyJWT==1.7.1
+PyJWT==2.4.0
 pytz==2019.1
 requests==2.21.0
 six==1.12.0
